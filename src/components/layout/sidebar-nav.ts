@@ -1,6 +1,28 @@
-import { LayoutDashboard, Users, Settings, Layers, type LucideIcon } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Settings,
+  Layers,
+  CalendarDays,
+  Newspaper,
+  UserCheck,
+  GraduationCap,
+  FileText,
+  Package,
+  UserPlus,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
 import { hasPermission, P } from "@/features/identity";
 import { SAMPLE_P } from "@/features/sample";
+import { RESERVATIONS_P } from "@/features/reservations";
+import { NEWS_P } from "@/features/news";
+import { PERSONNEL_P } from "@/features/personnel";
+import { CURRICULUM_P } from "@/features/curriculum";
+import { DOCUMENTS_P } from "@/features/documents";
+import { ASSETS_P } from "@/features/assets";
+import { ADMISSIONS_P } from "@/features/admissions";
+import { MAINTENANCE_P } from "@/features/maintenance";
 
 export interface NavItem {
   /** i18n key */
@@ -16,6 +38,52 @@ export interface NavCrumb { title: string; href: string }
 
 export const sidebarGroups: NavGroup[] = [
   { label: "nav.group.overview", items: [{ title: "nav.dashboard", href: "/dashboard", icon: LayoutDashboard }] },
+  {
+    label: "news.nav",
+    items: [{ title: "news.nav", href: "/news/manage", icon: Newspaper, permission: NEWS_P.read }],
+  },
+  {
+    label: "personnel.nav",
+    items: [{ title: "personnel.nav", href: "/personnel/manage", icon: UserCheck, permission: PERSONNEL_P.read }],
+  },
+  {
+    label: "curriculum.nav",
+    items: [{ title: "curriculum.nav", href: "/programs/manage", icon: GraduationCap, permission: CURRICULUM_P.read }],
+  },
+  {
+    label: "admissions.nav",
+    items: [{ title: "admissions.nav", href: "/admissions/manage", icon: UserPlus, permission: ADMISSIONS_P.read }],
+  },
+  {
+    label: "assets.nav",
+    items: [{
+      title: "assets.nav", href: "/inventory/assets", icon: Package, permission: ASSETS_P.read,
+      children: [
+        { title: "assets.nav.items", href: "/inventory/assets", permission: ASSETS_P.read },
+        { title: "assets.nav.supplies", href: "/inventory/supplies", permission: ASSETS_P.read },
+      ],
+    }],
+  },
+  {
+    label: "maintenance.nav",
+    items: [{ title: "maintenance.nav", href: "/maintenance", icon: Wrench, permission: MAINTENANCE_P.read }],
+  },
+  {
+    label: "documents.nav",
+    items: [{ title: "documents.nav", href: "/documents", icon: FileText, permission: DOCUMENTS_P.read }],
+  },
+  {
+    label: "reservations.nav",
+    items: [{
+      title: "reservations.nav", href: "/reservations/calendar", icon: CalendarDays, permission: RESERVATIONS_P.read,
+      children: [
+        { title: "reservations.tab.calendar", href: "/reservations/calendar", permission: RESERVATIONS_P.read },
+        { title: "reservations.tab.my", href: "/reservations/my", permission: RESERVATIONS_P.create },
+        { title: "reservations.tab.inbox", href: "/reservations/inbox", permission: RESERVATIONS_P.approve },
+        { title: "reservations.tab.resources", href: "/reservations/resources", permission: RESERVATIONS_P.manage },
+      ],
+    }],
+  },
   {
     label: "nav.group.sample",
     items: [{ title: "sample.nav", href: "/sample", icon: Layers, permission: SAMPLE_P.sampleRead }],

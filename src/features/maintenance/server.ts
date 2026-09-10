@@ -1,0 +1,17 @@
+export {
+  listServiceCategories,
+  listServiceTickets,
+  getServiceTicketById,
+  trackPublicTicket,
+  createServiceTicket,
+  assignServiceTicket,
+  updateTicketProgress,
+  resolveServiceTicket,
+  rateServiceTicket,
+  getMaintenanceStats,
+  type ServiceCategoryDto,
+  type ServiceTicketDto,
+  type TicketCommentDto,
+  type TicketRatingDto,
+  type MaintenanceStatsDto,
+} from "./_internal/services";

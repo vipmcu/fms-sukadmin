@@ -69,3 +69,28 @@
   * { @apply border-border outline-ring/50; }
   body { @apply bg-background text-foreground; }
 }
+
+/* ═══════════ Elevate Living Spaces Architectural Luxury Tokens ═══════════ */
+.font-serif-luxury {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+.glass-nav-elevate {
+  background: rgba(247, 245, 239, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(222, 217, 203, 0.8);
+}
+
+.glass-card-elevate {
+  background: rgba(247, 245, 239, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(222, 217, 203, 0.85);
+  box-shadow: 0 20px 40px -15px rgba(22, 37, 30, 0.06);
+}
+
+.dark-emerald-elevate {
+  background-color: #121c17;
+  color: #ede7dc;
+}
