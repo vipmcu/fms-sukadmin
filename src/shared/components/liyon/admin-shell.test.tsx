@@ -144,4 +144,28 @@ describe("AdminShell", () => {
     );
     expect(screen.getByText("3")).toBeTruthy();
   });
+
+  it("เรนเดอร์รูปภาพโลโก้เมื่อส่ง brandLogo มา", () => {
+    render(
+      <AdminShell
+        {...baseProps({
+          brandLogo: "/uploads/logos/custom-logo.png",
+          brandName: "Faculty Org",
+        })}
+      />,
+    );
+    const img = screen.getByRole("img", { name: "Faculty Org" });
+    expect(img).toBeTruthy();
+    expect(img.getAttribute("src")).toBe("/uploads/logos/custom-logo.png");
+  });
+
+  it("เรนเดอร์ SVG ไอคอนมาตรฐานเมื่อไม่มี brandLogo", () => {
+    const { container } = render(
+      <AdminShell {...baseProps({ brandLogo: null })} />,
+    );
+    const brandBlock = container.querySelector(".brand-blk");
+    expect(brandBlock?.querySelector("img")).toBeNull();
+    expect(brandBlock?.querySelector("svg")).toBeTruthy();
+  });
 });
+

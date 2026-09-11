@@ -63,3 +63,34 @@ export const resolvePalette = cache(async (): Promise<PaletteId> => {
     return DEFAULT_PALETTE;
   }
 });
+
+export interface TenantBranding {
+  nameTh: string;
+  nameEn: string;
+  logoUrl: string | null;
+  palette: PaletteId;
+}
+
+/** ใช้โดย admin layout — ดึงข้อมูลแบรนดิ้งของ tenant ปัจจุบัน (ชื่อ, โลโก้, พาเล็ตสี) */
+export const resolveTenantBranding = cache(async (): Promise<TenantBranding> => {
+  try {
+    const tenantId = (await sessionTenantId()) || (await prisma.tenant.findFirst({ orderBy: { createdAt: "asc" }, select: { id: true } }))?.id;
+    if (!tenantId) {
+      return { nameTh: "VibeCore", nameEn: "VibeCore", logoUrl: null, palette: DEFAULT_PALETTE };
+    }
+    const t = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { nameTh: true, nameEn: true, logoUrl: true, settings: true },
+    });
+    if (!t) return { nameTh: "VibeCore", nameEn: "VibeCore", logoUrl: null, palette: DEFAULT_PALETTE };
+    const p = (t.settings as { palette?: unknown } | null)?.palette;
+    return {
+      nameTh: t.nameTh,
+      nameEn: t.nameEn,
+      logoUrl: t.logoUrl,
+      palette: isPalette(p) ? p : DEFAULT_PALETTE,
+    };
+  } catch {
+    return { nameTh: "VibeCore", nameEn: "VibeCore", logoUrl: null, palette: DEFAULT_PALETTE };
+  }
+});
