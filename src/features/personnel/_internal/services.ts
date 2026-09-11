@@ -48,6 +48,7 @@ export interface PersonnelProfileDto {
 }
 
 export async function listDepartments(tenantId: string): Promise<DepartmentDto[]> {
+  if (!tenantId) return [];
   const items = await prisma.department.findMany({
     where: { tenantId },
     include: { _count: { select: { personnel: true } } },
@@ -120,6 +121,7 @@ export async function listPersonnel(
     search?: string;
   }
 ): Promise<PersonnelProfileDto[]> {
+  if (!tenantId) return [];
   const where: Prisma.PersonnelProfileWhereInput = { tenantId };
 
   if (filter?.type) where.type = filter.type;

@@ -45,6 +45,7 @@ export interface NewsArticleDto {
 }
 
 export async function listNewsCategories(tenantId: string): Promise<NewsCategoryDto[]> {
+  if (!tenantId) return [];
   const items = await prisma.newsCategory.findMany({
     where: { tenantId },
     include: {
@@ -125,6 +126,7 @@ export async function listNewsArticles(
     limit?: number;
   }
 ): Promise<NewsArticleDto[]> {
+  if (!tenantId) return [];
   const where: Prisma.NewsArticleWhereInput = { tenantId };
 
   if (filter?.status) where.status = filter.status;

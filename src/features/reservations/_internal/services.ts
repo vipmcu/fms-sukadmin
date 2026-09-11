@@ -81,6 +81,7 @@ export async function listResources(
   tenantId: string,
   filter?: { type?: ResourceType; isActive?: boolean; search?: string }
 ): Promise<ReservationResourceDto[]> {
+  if (!tenantId) return [];
   const where: Record<string, unknown> = { tenantId };
   if (filter?.type) where.type = filter.type;
   if (filter?.isActive !== undefined) where.isActive = filter.isActive;
@@ -207,6 +208,7 @@ export async function listReservations(
     to?: Date;
   }
 ): Promise<ReservationDto[]> {
+  if (!tenantId) return [];
   const where: Record<string, unknown> = { tenantId };
   if (filter?.resourceId) where.resourceId = filter.resourceId;
   if (filter?.requesterId) where.requesterId = filter.requesterId;
@@ -542,6 +544,7 @@ export async function listPublicSchedules(
   tenantId: string,
   filter?: { from?: Date; to?: Date; resourceType?: ResourceType }
 ): Promise<PublicScheduleDto[]> {
+  if (!tenantId) return [];
   const where: Record<string, unknown> = {
     tenantId,
     status: { in: ["PENDING", "APPROVED"] },

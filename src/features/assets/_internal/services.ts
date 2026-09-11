@@ -60,6 +60,7 @@ export interface SupplyItemDto {
 }
 
 export async function listAssetCategories(tenantId: string): Promise<AssetCategoryDto[]> {
+  if (!tenantId) return [];
   const items = await prisma.assetCategory.findMany({
     where: { tenantId },
     include: { _count: { select: { items: true } } },
@@ -82,6 +83,7 @@ export async function listAssetItems(
   tenantId: string,
   filter?: { status?: AssetStatus; categoryId?: string; search?: string }
 ): Promise<AssetItemDto[]> {
+  if (!tenantId) return [];
   const where: Prisma.AssetItemWhereInput = { tenantId };
 
   if (filter?.status) {
@@ -413,6 +415,7 @@ export async function deleteAssetItem(tenantId: string, id: string, _actorId: st
 }
 
 export async function listSupplyItems(tenantId: string): Promise<SupplyItemDto[]> {
+  if (!tenantId) return [];
   const items = await prisma.supplyItem.findMany({
     where: { tenantId },
     orderBy: { code: "asc" },

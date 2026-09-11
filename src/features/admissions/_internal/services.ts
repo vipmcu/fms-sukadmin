@@ -73,6 +73,7 @@ export interface PublicApplicationStatusDto {
 }
 
 export async function listAdmissionRounds(tenantId: string, onlyActive = false): Promise<AdmissionRoundDto[]> {
+  if (!tenantId) return [];
   const now = new Date();
   const where: Prisma.AdmissionRoundWhereInput = { tenantId };
   if (onlyActive) {
@@ -216,6 +217,7 @@ export async function listStudentApplications(
   tenantId: string,
   filter?: { roundId?: string; programId?: string; status?: AdmissionStatus; search?: string }
 ): Promise<StudentApplicationDto[]> {
+  if (!tenantId) return [];
   const where: Prisma.StudentApplicationWhereInput = { tenantId };
 
   if (filter?.roundId) where.roundId = filter.roundId;

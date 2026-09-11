@@ -52,6 +52,7 @@ export async function listPrograms(
     search?: string;
   }
 ): Promise<AcademicProgramDto[]> {
+  if (!tenantId) return [];
   const where: Prisma.AcademicProgramWhereInput = { tenantId };
 
   if (filter?.level) where.level = filter.level;

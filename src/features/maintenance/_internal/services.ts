@@ -82,6 +82,7 @@ export interface MaintenanceStatsDto {
 }
 
 export async function listServiceCategories(tenantId: string): Promise<ServiceCategoryDto[]> {
+  if (!tenantId) return [];
   const items = await prisma.serviceCategory.findMany({
     where: { tenantId },
     include: { _count: { select: { tickets: true } } },
@@ -104,6 +105,7 @@ export async function listServiceTickets(
   tenantId: string,
   filter?: { status?: TicketStatus; priority?: TicketPriority; technicianId?: string; search?: string }
 ): Promise<ServiceTicketDto[]> {
+  if (!tenantId) return [];
   const where: Prisma.ServiceTicketWhereInput = { tenantId };
 
   if (filter?.status) where.status = filter.status;
@@ -721,6 +723,9 @@ export async function rateServiceTicket(
 }
 
 export async function getMaintenanceStats(tenantId: string): Promise<MaintenanceStatsDto> {
+  if (!tenantId) {
+    return { total: 0, open: 0, assigned: 0, inProgress: 0, resolved: 0, slaCompliancePercent: 100 };
+  }
   const [total, open, assigned, inProgress, resolved, allResolvedWithSla] = await Promise.all([
     prisma.serviceTicket.count({ where: { tenantId } }),
     prisma.serviceTicket.count({ where: { tenantId, status: "OPEN" } }),

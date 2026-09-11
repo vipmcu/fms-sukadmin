@@ -61,6 +61,7 @@ export interface DocumentRequestDto {
 }
 
 export async function listDocumentTypes(tenantId: string): Promise<DocumentTypeDto[]> {
+  if (!tenantId) return [];
   const items = await prisma.documentType.findMany({
     where: { tenantId },
     orderBy: { code: "asc" },
@@ -140,6 +141,7 @@ export async function listDocumentRequests(
     search?: string;
   }
 ): Promise<DocumentRequestDto[]> {
+  if (!tenantId) return [];
   const where: Prisma.DocumentRequestWhereInput = { tenantId };
 
   if (filter?.status) where.status = filter.status;
