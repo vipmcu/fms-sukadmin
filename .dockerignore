@@ -1,0 +1,36 @@
+# Dependency and Build directories
+node_modules
+.next
+out
+build
+dist
+
+# Environment and Secrets (CRITICAL for security)
+.env
+.env*
+!.env.production.example
+
+# Git and OS metadata
+.git
+.github
+.gitignore
+.gitattributes
+.DS_Store
+*.log
+npm-debug.log*
+
+# Testing, E2E and Coverage
+coverage
+test-results
+playwright-report
+e2e
+tests
+*.test.ts
+*.test.tsx
+*.spec.ts
+
+# Temporary & Local development files
+.superpowers
+.tempmediaStorage
+scratch
+*.tsbuildinfo

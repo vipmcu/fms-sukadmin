@@ -1,0 +1,73 @@
+services:
+  # -----------------------------------------------------------
+  # 1. Database Service: PostgreSQL 16
+  # -----------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    container_name: fms-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fms_prod_password}
+      POSTGRES_DB: ${POSTGRES_DB:-ums_prod}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      # Bound to 127.0.0.1:5433 to prevent port collision with local dev PostgreSQL on 5432
+      - "127.0.0.1:5433:5432"
+    networks:
+      - fms-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-ums_prod}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # -----------------------------------------------------------
+  # 2. Web Application Service: Next.js 16 Production Standalone
+  # -----------------------------------------------------------
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fms-web
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3010:3010"
+    environment:
+      NODE_ENV: production
+      PORT: 3010
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-fms_prod_password}@db:5432/${POSTGRES_DB:-ums_prod}?schema=public
+      AUTH_SECRET: ${AUTH_SECRET}
+      AUTH_TRUST_HOST: "true"
+      APP_URL: ${APP_URL:-http://localhost:3010}
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-App <no-reply@localhost>}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      MICROSOFT_CLIENT_ID: ${MICROSOFT_CLIENT_ID:-}
+      MICROSOFT_CLIENT_SECRET: ${MICROSOFT_CLIENT_SECRET:-}
+      MICROSOFT_TENANT_ID: ${MICROSOFT_TENANT_ID:-common}
+    volumes:
+      # Persistent named volume for uploaded logos and documents
+      - uploads_data:/app/public/uploads
+    networks:
+      - fms-network
+
+volumes:
+  postgres_data:
+    driver: local
+  uploads_data:
+    driver: local
+
+networks:
+  fms-network:
+    driver: bridge
