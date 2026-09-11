@@ -18,9 +18,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { StatusPill, type StatusPillTone } from "@/shared/components/liyon";
 import { trackTicketAction, rateTicketAction } from "@/features/maintenance/actions";
+import { formatDate } from "@/shared/lib/format";
+import { useLocale } from "@/shared/lib/i18n/client";
 import type { ServiceTicketDto } from "@/features/maintenance";
 
 export function HelpdeskTrackingClient() {
+  const locale = useLocale();
   const searchParams = useSearchParams();
   const initialTicketNo = searchParams.get("ticketNo") || "";
   const initialPhone = searchParams.get("phone") || "";
@@ -245,13 +248,7 @@ export function HelpdeskTrackingClient() {
               <div>
                 <span className="text-muted-foreground">วันที่แจ้งเรื่อง:</span>
                 <div className="font-mono text-foreground mt-0.5">
-                  {new Date(ticket.createdAt).toLocaleDateString("th-TH", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {formatDate(ticket.createdAt, locale, { time: true })}
                 </div>
               </div>
             </div>
@@ -281,7 +278,7 @@ export function HelpdeskTrackingClient() {
                 <div>
                   <span className="font-semibold text-foreground">รับเรื่องแจ้งซ่อมเข้าสู่ระบบ</span>
                   <span className="text-muted-foreground ml-2">
-                    ({new Date(ticket.createdAt).toLocaleDateString("th-TH")})
+                    ({formatDate(ticket.createdAt, locale)})
                   </span>
                 </div>
               </div>
@@ -340,7 +337,7 @@ export function HelpdeskTrackingClient() {
                   <span className="font-semibold text-foreground">ปิดงานซ่อมเรียบร้อย</span>
                   {ticket.resolvedAt && (
                     <span className="text-emerald-600 ml-2">
-                      ({new Date(ticket.resolvedAt).toLocaleDateString("th-TH")})
+                      ({formatDate(ticket.resolvedAt, locale)})
                     </span>
                   )}
                 </div>
@@ -379,7 +376,7 @@ export function HelpdeskTrackingClient() {
                     </p>
                   )}
                   <div className="text-[10px] text-muted-foreground">
-                    ประเมินเมื่อ: {new Date(ticket.rating.createdAt).toLocaleDateString("th-TH")}
+                    ประเมินเมื่อ: {formatDate(ticket.rating.createdAt, locale)}
                   </div>
                 </div>
               ) : (

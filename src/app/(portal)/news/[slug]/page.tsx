@@ -4,6 +4,7 @@ import { getPortalTenantId } from "@/shared/lib/portal-tenant";
 import { getNewsArticleBySlug, listNewsArticles } from "@/features/news/server";
 import { ArrowLeft, Calendar, Eye, User, Pin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/shared/lib/format";
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
@@ -84,11 +85,7 @@ export default async function PublicArticleDetailPage({ params }: ArticlePagePro
             <span>
               เผยแพร่เมื่อ{" "}
               {article.publishedAt
-                ? new Date(article.publishedAt).toLocaleDateString("th-TH", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })
+                ? formatDate(article.publishedAt, "th")
                 : "-"}
             </span>
           </div>
@@ -151,7 +148,7 @@ export default async function PublicArticleDetailPage({ params }: ArticlePagePro
                 </div>
                 <div className="pt-3 mt-3 border-t border-border/50 text-[11px] text-muted-foreground">
                   {ra.publishedAt
-                    ? new Date(ra.publishedAt).toLocaleDateString("th-TH")
+                    ? formatDate(ra.publishedAt, "th")
                     : ""}
                 </div>
               </Link>

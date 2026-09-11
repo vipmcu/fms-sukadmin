@@ -4,7 +4,8 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Plus, Ban, Calendar } from "lucide-react";
-import { useT } from "@/shared/lib/i18n/client";
+import { useT, useLocale } from "@/shared/lib/i18n/client";
+import { formatDate } from "@/shared/lib/format";
 import {
   StatusPill,
   type StatusPillTone,
@@ -35,6 +36,7 @@ export function MyBookingsClient({
   canManage,
 }: MyBookingsClientProps) {
   const t = useT();
+  const locale = useLocale();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -140,7 +142,7 @@ export function MyBookingsClient({
                         <div className="text-xs text-muted-foreground line-clamp-1">{b.purpose}</div>
                       </td>
                       <td className="px-4 py-3.5 text-xs text-muted-foreground">
-                        <div>{s.toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" })}</div>
+                        <div>{formatDate(s, locale)}</div>
                         <div>{s.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} - {e.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} น.</div>
                       </td>
                       <td className="px-4 py-3.5">

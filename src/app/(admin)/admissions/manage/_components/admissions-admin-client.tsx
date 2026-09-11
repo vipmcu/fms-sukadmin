@@ -38,6 +38,7 @@ import type {
   StudentApplicationDto,
 } from "@/features/admissions";
 import type { AcademicProgramDto } from "@/features/curriculum";
+import { formatDate } from "@/shared/lib/format";
 
 interface AdmissionsAdminClientProps {
   rounds: AdmissionRoundDto[];
@@ -268,7 +269,7 @@ export function AdmissionsAdminClient({
         `"${a.gpax ?? "-"}"`,
         `"${getStatusLabel(a.status)}"`,
         `"${a.score ?? "-"}"`,
-        `"${new Date(a.createdAt).toLocaleDateString("th-TH")}"`,
+        `"${formatDate(a.createdAt, "th")}"`,
       ]);
 
       const csvContent = "\uFEFF" + [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
@@ -517,7 +518,7 @@ export function AdmissionsAdminClient({
                           )}
                         </td>
                         <td className="px-4 py-3.5 text-right font-mono text-xs text-muted-foreground">
-                          {new Date(app.createdAt).toLocaleDateString("th-TH")}
+                          {formatDate(app.createdAt, "th")}
                         </td>
                         <td className="px-4 py-3.5 text-right">
                           <div className="flex items-center justify-end gap-1.5">
@@ -572,20 +573,20 @@ export function AdmissionsAdminClient({
                 <div>
                   <span className="text-muted-foreground">เปิดรับ:</span>{" "}
                   <span className="font-medium">
-                    {new Date(round.startDate).toLocaleDateString("th-TH")}
+                    {formatDate(round.startDate, "th")}
                   </span>
                 </div>
                 <div>
                   <span className="text-muted-foreground">สิ้นสุด:</span>{" "}
                   <span className="font-medium">
-                    {new Date(round.endDate).toLocaleDateString("th-TH")}
+                    {formatDate(round.endDate, "th")}
                   </span>
                 </div>
                 {round.announcementDate && (
                   <div className="col-span-2">
                     <span className="text-muted-foreground">ประกาศผล:</span>{" "}
                     <span className="font-medium">
-                      {new Date(round.announcementDate).toLocaleDateString("th-TH")}
+                      {formatDate(round.announcementDate, "th")}
                     </span>
                   </div>
                 )}

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Calendar as CalendarIcon, Clock, MapPin, Users as UsersIcon, Car, DoorOpen } from "lucide-react";
-import { useT } from "@/shared/lib/i18n/client";
+import { useT, useLocale } from "@/shared/lib/i18n/client";
+import { formatDate } from "@/shared/lib/format";
 import { StatusPill, type StatusPillTone } from "@/shared/components/liyon";
 import { Button } from "@/components/ui/button";
 import { ReservationsNav } from "../../_components/reservations-nav";
@@ -26,6 +27,7 @@ export function CalendarClient({
   canCreate,
 }: CalendarClientProps) {
   const t = useT();
+  const locale = useLocale();
   const router = useRouter();
 
   const [typeFilter, setTypeFilter] = useState<"ALL" | "ROOM" | "VEHICLE">("ALL");
@@ -55,7 +57,7 @@ export function CalendarClient({
     const s = new Date(startStr);
     const e = new Date(endStr);
     const pad = (n: number) => String(n).padStart(2, "0");
-    const datePart = `${s.toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" })}`;
+    const datePart = formatDate(s, locale);
     const timePart = `${pad(s.getHours())}:${pad(s.getMinutes())} - ${pad(e.getHours())}:${pad(e.getMinutes())} น.`;
     return { datePart, timePart };
   };

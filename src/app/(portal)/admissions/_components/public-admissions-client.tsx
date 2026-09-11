@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import type { AdmissionRoundDto } from "@/features/admissions";
 import type { AcademicProgramDto } from "@/features/curriculum";
+import { formatDate } from "@/shared/lib/format";
+import { useLocale } from "@/shared/lib/i18n/client";
 
 interface PublicAdmissionsClientProps {
   rounds: AdmissionRoundDto[];
@@ -19,6 +21,7 @@ export function PublicAdmissionsClient({
   rounds,
   programs: _programs,
 }: PublicAdmissionsClientProps) {
+  const locale = useLocale();
   const activeRounds = rounds.filter((r) => r.isActive);
 
   return (
@@ -124,32 +127,20 @@ export function PublicAdmissionsClient({
                     <div>
                       <div className="text-[#55635c] text-[11px]">เริ่มรับสมัคร:</div>
                       <div className="font-medium text-[#16251e] mt-0.5">
-                        {new Date(round.startDate).toLocaleDateString("th-TH", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
+                        {formatDate(round.startDate, locale)}
                       </div>
                     </div>
                     <div>
                       <div className="text-[#55635c] text-[11px]">สิ้นสุดรับสมัคร:</div>
                       <div className="font-medium text-[#16251e] mt-0.5">
-                        {new Date(round.endDate).toLocaleDateString("th-TH", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
+                        {formatDate(round.endDate, locale)}
                       </div>
                     </div>
                     {round.announcementDate && (
                       <div className="col-span-2 pt-2 border-t border-[#ded9cb]/80 mt-1">
                         <span className="text-[#55635c] text-[11px]">ประกาศผลคัดเลือก: </span>
                         <span className="font-medium text-[#1e3328]">
-                          {new Date(round.announcementDate).toLocaleDateString("th-TH", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                          })}
+                          {formatDate(round.announcementDate, locale)}
                         </span>
                       </div>
                     )}

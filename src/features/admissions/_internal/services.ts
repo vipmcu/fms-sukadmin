@@ -1,10 +1,12 @@
 import { prisma } from "@/shared/lib/infra/prisma";
 import { Prisma, type AdmissionStatus } from "@/generated/prisma";
+import { maskName } from "@/shared/lib/security/mask";
 import type {
   CreateAdmissionRoundInput,
   SubmitStudentApplicationInput,
   ReviewApplicationInput,
 } from "./validations";
+import { isRoundOpen, formatApplicationNo } from "./application-rules";
 
 export interface AdmissionQuotaDto {
   id: string;
@@ -273,60 +275,59 @@ export async function submitStudentApplication(
   tenantId: string,
   input: SubmitStudentApplicationInput
 ): Promise<StudentApplicationDto> {
-  const round = await prisma.admissionRound.findFirst({
-    where: { id: input.roundId, tenantId, isActive: true },
-  });
-  if (!round) {
-    throw new Error("ไม่พบรอบการรับสมัคร หรือรอบนี้ปิดรับสมัครแล้ว");
-  }
+  const created = await prisma.$transaction(async (tx) => {
+    const round = await tx.admissionRound.findFirst({
+      where: { id: input.roundId, tenantId, isActive: true },
+    });
+    if (!round) {
+      throw new Error("ไม่พบรอบการรับสมัคร หรือรอบนี้ปิดรับสมัครแล้ว");
+    }
 
-  const now = new Date();
-  if (round.startDate > now || round.endDate < now) {
-    throw new Error("รอบการรับสมัครนี้สิ้นสุดลงแล้วหรือไม่ยังไม่เปิดรับสมัคร");
-  }
+    if (!isRoundOpen(round.startDate, round.endDate)) {
+      throw new Error("รอบการรับสมัครนี้สิ้นสุดลงแล้วหรือไม่ยังไม่เปิดรับสมัคร");
+    }
 
-  const existing = await prisma.studentApplication.findFirst({
-    where: {
-      tenantId,
-      roundId: input.roundId,
-      programId: input.programId,
-      nationalId: input.nationalId,
-    },
-  });
-  if (existing) {
-    throw new Error("ท่านได้ยื่นสมัครในหลักสูตรนี้ของรอบนี้แล้ว");
-  }
+    const existing = await tx.studentApplication.findFirst({
+      where: {
+        tenantId,
+        roundId: input.roundId,
+        programId: input.programId,
+        nationalId: input.nationalId,
+      },
+    });
+    if (existing) {
+      throw new Error("ท่านได้ยื่นสมัครในหลักสูตรนี้ของรอบนี้แล้ว");
+    }
 
-  // Generate Application No (ADM-YY-XXXX)
-  const yearSuffix = (round.academicYear % 100).toString().padStart(2, "0");
-  const count = await prisma.studentApplication.count({
-    where: { tenantId, roundId: input.roundId },
-  });
-  const seq = (count + 1).toString().padStart(4, "0");
-  const applicationNo = `ADM-${yearSuffix}-${seq}`;
+    // Generate Application No (ADM-YY-XXXX)
+    const count = await tx.studentApplication.count({
+      where: { tenantId, roundId: input.roundId },
+    });
+    const applicationNo = formatApplicationNo(round.academicYear, count + 1);
 
-  const created = await prisma.studentApplication.create({
-    data: {
-      tenantId,
-      roundId: input.roundId,
-      programId: input.programId,
-      applicationNo,
-      nationalId: input.nationalId,
-      title: input.title,
-      applicantNameTh: input.applicantNameTh,
-      applicantNameEn: input.applicantNameEn,
-      email: input.email,
-      phone: input.phone,
-      schoolName: input.schoolName,
-      gpax: input.gpax,
-      formData: (input.formData as Prisma.InputJsonValue) ?? {},
-      documents: (input.documents as unknown as Prisma.InputJsonValue) ?? [],
-      status: "SUBMITTED",
-    },
-    include: {
-      round: { select: { roundName: true } },
-      program: { select: { nameTh: true, code: true } },
-    },
+    return tx.studentApplication.create({
+      data: {
+        tenantId,
+        roundId: input.roundId,
+        programId: input.programId,
+        applicationNo,
+        nationalId: input.nationalId,
+        title: input.title,
+        applicantNameTh: input.applicantNameTh,
+        applicantNameEn: input.applicantNameEn,
+        email: input.email,
+        phone: input.phone,
+        schoolName: input.schoolName,
+        gpax: input.gpax,
+        formData: (input.formData as Prisma.InputJsonValue) ?? {},
+        documents: (input.documents as unknown as Prisma.InputJsonValue) ?? [],
+        status: "SUBMITTED",
+      },
+      include: {
+        round: { select: { roundName: true } },
+        program: { select: { nameTh: true, code: true } },
+      },
+    });
   });
 
   return {
@@ -435,15 +436,9 @@ export async function trackPublicApplication(
 
   if (!item) return null;
 
-  // Mask Name for PDPA: สมชาย ใจดี -> ส***ย ใ***
-  const names = item.applicantNameTh.split(" ");
-  const maskedName = names
-    .map((n) => (n.length > 2 ? `${n[0]}***${n[n.length - 1]}` : `${n[0]}*`))
-    .join(" ");
-
   return {
     applicationNo: item.applicationNo,
-    maskedName,
+    maskedName: maskName(item.applicantNameTh),
     programNameTh: item.program.nameTh,
     roundName: item.round.roundName,
     status: item.status,

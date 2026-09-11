@@ -17,6 +17,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { createServiceTicketAction } from "@/features/maintenance/actions";
+import { formatDate } from "@/shared/lib/format";
+import { useLocale } from "@/shared/lib/i18n/client";
 import type { ServiceCategoryDto, ServiceTicketDto } from "@/features/maintenance";
 
 interface PublicHelpdeskClientProps {
@@ -24,6 +26,7 @@ interface PublicHelpdeskClientProps {
 }
 
 export function PublicHelpdeskClient({ categories }: PublicHelpdeskClientProps) {
+  const locale = useLocale();
   const searchParams = useSearchParams();
   const initialAssetId = searchParams.get("assetId") || "";
   const initialLocation = searchParams.get("location") || "";
@@ -137,11 +140,8 @@ export function PublicHelpdeskClient({ categories }: PublicHelpdeskClientProps) 
                 <div className="col-span-2 pt-2 border-t border-[#ded9cb]/80 mt-1">
                   <span className="text-[#55635c]">กำหนดเวลาแก้ไขตาม SLA: </span>
                   <span className="font-medium text-emerald-700">
-                    {new Date(submittedTicket.slaDeadline).toLocaleDateString("th-TH", {
-                      day: "numeric",
-                      month: "long",
-                      hour: "2-digit",
-                      minute: "2-digit",
+                    {formatDate(submittedTicket.slaDeadline, locale, {
+                      time: true,
                     })}
                   </span>
                 </div>

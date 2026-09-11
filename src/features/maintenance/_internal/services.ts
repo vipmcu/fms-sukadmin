@@ -1,5 +1,6 @@
 import { prisma } from "@/shared/lib/infra/prisma";
 import { Prisma, type TicketPriority, type TicketStatus } from "@/generated/prisma";
+import { maskName, maskPhone, maskEmail } from "@/shared/lib/security/mask";
 import { calculateSlaDeadline, isSlaBreached } from "./sla";
 import type {
   CreateServiceTicketInput,
@@ -287,9 +288,9 @@ export async function trackPublicTicket(
     status: t.status,
     photos: (t.photos as string[]) || [],
     completionPhotos: (t.completionPhotos as string[]) || [],
-    requesterName: t.requesterName,
-    requesterEmail: t.requesterEmail,
-    requesterPhone: t.requesterPhone,
+    requesterName: maskName(t.requesterName),
+    requesterEmail: maskEmail(t.requesterEmail),
+    requesterPhone: maskPhone(t.requesterPhone),
     assignedTechnicianId: t.assignedTechnicianId,
     assignedTechnicianName: t.technician?.name || null,
     slaDeadline: t.slaDeadline ? t.slaDeadline.toISOString() : null,

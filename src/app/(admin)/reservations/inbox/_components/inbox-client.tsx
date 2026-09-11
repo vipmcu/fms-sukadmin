@@ -4,7 +4,8 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { CheckCircle2, XCircle, Clock, MapPin, Users as UsersIcon } from "lucide-react";
-import { useT } from "@/shared/lib/i18n/client";
+import { useT, useLocale } from "@/shared/lib/i18n/client";
+import { formatDate } from "@/shared/lib/format";
 import {
   StatusPill,
   type StatusPillTone,
@@ -27,6 +28,7 @@ interface InboxClientProps {
 
 export function InboxClient({ initialReservations, canManage }: InboxClientProps) {
   const t = useT();
+  const locale = useLocale();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -175,7 +177,7 @@ export function InboxClient({ initialReservations, canManage }: InboxClientProps
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1.5">
                       <Clock className="size-3.5" />
-                      <span>{s.toLocaleDateString("th-TH")} ({s.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} - {e.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} น.)</span>
+                      <span>{formatDate(s, locale)} ({s.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} - {e.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} น.)</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <UsersIcon className="size-3.5" />

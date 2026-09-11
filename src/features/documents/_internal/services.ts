@@ -1,12 +1,13 @@
 import { prisma } from "@/shared/lib/infra/prisma";
 import type { DocumentStatus, Prisma } from "@/generated/prisma";
-import type {
+import {
   CreateDocumentTypeInput,
   UpdateDocumentTypeInput,
   CreateDocumentRequestInput,
   ApproveDocumentStepInput,
   RejectDocumentStepInput,
 } from "./validations";
+import { canReviewDocument, calculateApprovalTransition } from "./workflow";
 
 export interface DocumentTypeDto {
   id: string;
@@ -300,70 +301,74 @@ export async function approveDocumentStep(
   approverRole: string,
   input: ApproveDocumentStepInput
 ): Promise<DocumentRequestDto> {
-  const existing = await prisma.documentRequest.findFirst({
-    where: { id: input.documentId, tenantId },
-  });
-  if (!existing) throw new Error("ไม่พบรายการเอกสาร");
-  if (existing.status !== "SUBMITTED" && existing.status !== "IN_REVIEW") {
-    throw new Error("เอกสารนี้ไม่ได้อยู่ในสถานะรอพิจารณาลงนาม");
-  }
+  const updatedId = await prisma.$transaction(async (tx) => {
+    const existing = await tx.documentRequest.findFirst({
+      where: { id: input.documentId, tenantId },
+    });
+    if (!existing) throw new Error("ไม่พบรายการเอกสาร");
+    if (!canReviewDocument(existing.status)) {
+      throw new Error("เอกสารนี้ไม่ได้อยู่ในสถานะรอพิจารณาลงนาม");
+    }
 
-  const isFinalStep = existing.currentStep >= existing.totalSteps;
-  const nextStatus: DocumentStatus = isFinalStep ? "APPROVED" : "IN_REVIEW";
-  const nextStep = isFinalStep ? existing.currentStep : existing.currentStep + 1;
-  const nextRole = isFinalStep ? null : "DEAN";
+    const { isFinalStep, nextStatus, nextStep, nextRole } = calculateApprovalTransition(
+      existing.currentStep,
+      existing.totalSteps
+    );
 
-  // บันทึกขั้นตอนการอนุมัติ
-  await prisma.documentApprovalStep.upsert({
-    where: {
-      documentId_stepNumber: {
+    // บันทึกขั้นตอนการอนุมัติ
+    await tx.documentApprovalStep.upsert({
+      where: {
+        documentId_stepNumber: {
+          documentId: existing.id,
+          stepNumber: existing.currentStep,
+        },
+      },
+      create: {
         documentId: existing.id,
         stepNumber: existing.currentStep,
+        approverRole,
+        approverId,
+        status: "APPROVED",
+        comment: input.comment || null,
+        signatureUrl: input.signatureUrl || null,
+        actionAt: new Date(),
       },
-    },
-    create: {
-      documentId: existing.id,
-      stepNumber: existing.currentStep,
-      approverRole,
-      approverId,
-      status: "APPROVED",
-      comment: input.comment || null,
-      signatureUrl: input.signatureUrl || null,
-      actionAt: new Date(),
-    },
-    update: {
-      approverRole,
-      approverId,
-      status: "APPROVED",
-      comment: input.comment || null,
-      signatureUrl: input.signatureUrl || null,
-      actionAt: new Date(),
-    },
+      update: {
+        approverRole,
+        approverId,
+        status: "APPROVED",
+        comment: input.comment || null,
+        signatureUrl: input.signatureUrl || null,
+        actionAt: new Date(),
+      },
+    });
+
+    const updated = await tx.documentRequest.update({
+      where: { id: existing.id, tenantId },
+      data: {
+        status: nextStatus,
+        currentStep: nextStep,
+        currentApproverRole: nextRole,
+        finalApprovedAt: isFinalStep ? new Date() : null,
+      },
+    });
+
+    await tx.auditLog.create({
+      data: {
+        tenantId,
+        actorId: approverId,
+        action: "document.approve_step",
+        entity: "document_request",
+        entityId: updated.id,
+        before: { status: existing.status, step: existing.currentStep },
+        after: { status: nextStatus, step: nextStep },
+      },
+    }).catch(() => null);
+
+    return updated.id;
   });
 
-  const updated = await prisma.documentRequest.update({
-    where: { id: existing.id, tenantId },
-    data: {
-      status: nextStatus,
-      currentStep: nextStep,
-      currentApproverRole: nextRole,
-      finalApprovedAt: isFinalStep ? new Date() : null,
-    },
-  });
-
-  await prisma.auditLog.create({
-    data: {
-      tenantId,
-      actorId: approverId,
-      action: "document.approve_step",
-      entity: "document_request",
-      entityId: updated.id,
-      before: { status: existing.status, step: existing.currentStep },
-      after: { status: nextStatus, step: nextStep },
-    },
-  }).catch(() => null);
-
-  return (await getDocumentRequestById(tenantId, updated.id))!;
+  return (await getDocumentRequestById(tenantId, updatedId))!;
 }
 
 export async function rejectDocumentStep(
@@ -372,62 +377,66 @@ export async function rejectDocumentStep(
   approverRole: string,
   input: RejectDocumentStepInput
 ): Promise<DocumentRequestDto> {
-  const existing = await prisma.documentRequest.findFirst({
-    where: { id: input.documentId, tenantId },
-  });
-  if (!existing) throw new Error("ไม่พบรายการเอกสาร");
-  if (existing.status !== "SUBMITTED" && existing.status !== "IN_REVIEW") {
-    throw new Error("เอกสารนี้ไม่ได้อยู่ในสถานะรอพิจารณาลงนาม");
-  }
+  const updatedId = await prisma.$transaction(async (tx) => {
+    const existing = await tx.documentRequest.findFirst({
+      where: { id: input.documentId, tenantId },
+    });
+    if (!existing) throw new Error("ไม่พบรายการเอกสาร");
+    if (!canReviewDocument(existing.status)) {
+      throw new Error("เอกสารนี้ไม่ได้อยู่ในสถานะรอพิจารณาลงนาม");
+    }
 
-  await prisma.documentApprovalStep.upsert({
-    where: {
-      documentId_stepNumber: {
+    await tx.documentApprovalStep.upsert({
+      where: {
+        documentId_stepNumber: {
+          documentId: existing.id,
+          stepNumber: existing.currentStep,
+        },
+      },
+      create: {
         documentId: existing.id,
         stepNumber: existing.currentStep,
+        approverRole,
+        approverId,
+        status: "REJECTED",
+        comment: input.rejectionReason,
+        actionAt: new Date(),
       },
-    },
-    create: {
-      documentId: existing.id,
-      stepNumber: existing.currentStep,
-      approverRole,
-      approverId,
-      status: "REJECTED",
-      comment: input.rejectionReason,
-      actionAt: new Date(),
-    },
-    update: {
-      approverRole,
-      approverId,
-      status: "REJECTED",
-      comment: input.rejectionReason,
-      actionAt: new Date(),
-    },
+      update: {
+        approverRole,
+        approverId,
+        status: "REJECTED",
+        comment: input.rejectionReason,
+        actionAt: new Date(),
+      },
+    });
+
+    const updated = await tx.documentRequest.update({
+      where: { id: existing.id, tenantId },
+      data: {
+        status: "REJECTED",
+        rejectedAt: new Date(),
+        rejectionReason: input.rejectionReason,
+        currentApproverRole: null,
+      },
+    });
+
+    await tx.auditLog.create({
+      data: {
+        tenantId,
+        actorId: approverId,
+        action: "document.reject_step",
+        entity: "document_request",
+        entityId: updated.id,
+        before: { status: existing.status },
+        after: { status: "REJECTED", reason: input.rejectionReason },
+      },
+    }).catch(() => null);
+
+    return updated.id;
   });
 
-  const updated = await prisma.documentRequest.update({
-    where: { id: existing.id, tenantId },
-    data: {
-      status: "REJECTED",
-      rejectedAt: new Date(),
-      rejectionReason: input.rejectionReason,
-      currentApproverRole: null,
-    },
-  });
-
-  await prisma.auditLog.create({
-    data: {
-      tenantId,
-      actorId: approverId,
-      action: "document.reject_step",
-      entity: "document_request",
-      entityId: updated.id,
-      before: { status: existing.status },
-      after: { status: "REJECTED", reason: input.rejectionReason },
-    },
-  }).catch(() => null);
-
-  return (await getDocumentRequestById(tenantId, updated.id))!;
+  return (await getDocumentRequestById(tenantId, updatedId))!;
 }
 
 export async function cancelDocumentRequest(

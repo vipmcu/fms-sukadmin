@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Search, Calendar, Eye, Pin, Newspaper, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/shared/lib/format";
+import { useLocale } from "@/shared/lib/i18n/client";
 import type { NewsArticleDto, NewsCategoryDto } from "@/features/news";
 
 interface PublicNewsClientProps {
@@ -12,6 +14,7 @@ interface PublicNewsClientProps {
 }
 
 export function PublicNewsClient({ categories, articles }: PublicNewsClientProps) {
+  const locale = useLocale();
   const [search, setSearch] = useState("");
   const [selectedCatId, setSelectedCatId] = useState<string>("ALL");
 
@@ -79,11 +82,7 @@ export function PublicNewsClient({ categories, articles }: PublicNewsClientProps
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <Calendar className="size-3" />
                     {pinnedArticle.publishedAt
-                      ? new Date(pinnedArticle.publishedAt).toLocaleDateString("th-TH", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })
+                      ? formatDate(pinnedArticle.publishedAt, locale)
                       : ""}
                   </span>
                 </div>
@@ -196,11 +195,7 @@ export function PublicNewsClient({ categories, articles }: PublicNewsClientProps
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {a.publishedAt
-                        ? new Date(a.publishedAt).toLocaleDateString("th-TH", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })
+                        ? formatDate(a.publishedAt, locale)
                         : ""}
                     </span>
                   </div>

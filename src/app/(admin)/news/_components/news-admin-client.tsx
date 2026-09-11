@@ -27,6 +27,7 @@ import {
   LiyonSwitch,
 } from "@/shared/components/liyon";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/shared/lib/format";
 import type { NewsArticleDto, NewsCategoryDto } from "@/features/news";
 import {
   createArticleAction,
@@ -371,7 +372,7 @@ export function NewsAdminClient({
                   <span className="flex items-center gap-1">
                     <Calendar className="size-3.5" />
                     {a.publishedAt
-                      ? new Date(a.publishedAt).toLocaleDateString("th-TH")
+                      ? formatDate(a.publishedAt, "th")
                       : "ยังไม่เผยแพร่"}
                   </span>
                 </div>

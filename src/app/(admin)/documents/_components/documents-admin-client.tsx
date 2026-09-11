@@ -26,6 +26,7 @@ import {
   LiyonSelect,
 } from "@/shared/components/liyon";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/shared/lib/format";
 import type { DocumentTypeDto, DocumentRequestDto } from "@/features/documents";
 import {
   createDocumentRequestAction,
@@ -411,13 +412,7 @@ export function DocumentsAdminClient({
                     <span>•</span>
                     <span className="flex items-center gap-1">
                       <Clock className="size-3" />
-                      {new Date(r.createdAt).toLocaleDateString("th-TH", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {formatDate(r.createdAt, "th", { time: true })}
                     </span>
                     <span>•</span>
                     <span className="font-medium text-foreground">
@@ -501,7 +496,7 @@ export function DocumentsAdminClient({
                   <div>
                     <span className="text-muted-foreground block">วันที่ยื่น:</span>
                     <span className="font-semibold text-foreground">
-                      {new Date(viewTarget.createdAt).toLocaleDateString("th-TH")}
+                      {formatDate(viewTarget.createdAt, "th")}
                     </span>
                   </div>
                   <div>
@@ -564,12 +559,7 @@ export function DocumentsAdminClient({
                               </span>
                               {step.actionAt && (
                                 <span className="text-muted-foreground text-[11px]">
-                                  {new Date(step.actionAt).toLocaleDateString("th-TH", {
-                                    day: "numeric",
-                                    month: "short",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
+                                  {formatDate(step.actionAt, "th", { time: true })}
                                 </span>
                               )}
                             </div>

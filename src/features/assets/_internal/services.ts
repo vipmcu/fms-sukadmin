@@ -1,6 +1,6 @@
 import { prisma } from "@/shared/lib/infra/prisma";
 import { Prisma, type AssetStatus } from "@/generated/prisma";
-import type {
+import {
   CreateAssetItemInput,
   UpdateAssetItemInput,
   TransferAssetInput,
@@ -8,6 +8,7 @@ import type {
   UpdateSupplyItemInput,
   AdjustStockInput,
 } from "./validations";
+import { isLowStock, calculateNewStock } from "./stock";
 
 export interface AssetCategoryDto {
   id: string;
@@ -513,21 +514,20 @@ export async function adjustSupplyStock(
   input: AdjustStockInput,
   _actorId: string
 ): Promise<SupplyItemDto> {
-  const existing = await prisma.supplyItem.findFirst({
-    where: { id: input.id, tenantId },
-  });
-  if (!existing) {
-    throw new Error("ไม่พบรายการวัสดุที่ต้องการปรับปรุงสต็อก");
-  }
+  const s = await prisma.$transaction(async (tx) => {
+    const existing = await tx.supplyItem.findFirst({
+      where: { id: input.id, tenantId },
+    });
+    if (!existing) {
+      throw new Error("ไม่พบรายการวัสดุที่ต้องการปรับปรุงสต็อก");
+    }
 
-  const newStock = existing.currentStock + input.quantityChange;
-  if (newStock < 0) {
-    throw new Error(`สต็อกไม่เพียงพอ (คงเหลือ ${existing.currentStock} แต่ต้องการตัดจ่าย ${Math.abs(input.quantityChange)})`);
-  }
+    const newStock = calculateNewStock(existing.currentStock, input.quantityChange);
 
-  const s = await prisma.supplyItem.update({
-    where: { id: input.id },
-    data: { currentStock: newStock },
+    return tx.supplyItem.update({
+      where: { id: input.id },
+      data: { currentStock: newStock },
+    });
   });
 
   return {
@@ -539,7 +539,7 @@ export async function adjustSupplyStock(
     currentStock: s.currentStock,
     minStock: s.minStock,
     unitCost: s.unitCost ? Number(s.unitCost) : null,
-    isLowStock: s.currentStock <= s.minStock,
+    isLowStock: isLowStock(s.currentStock, s.minStock),
     createdAt: s.createdAt.toISOString(),
     updatedAt: s.updatedAt.toISOString(),
   };

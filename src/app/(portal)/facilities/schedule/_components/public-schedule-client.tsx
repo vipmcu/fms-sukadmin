@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Calendar as CalendarIcon, Clock, DoorOpen, Car, ArrowLeft, ShieldCheck, LogIn } from "lucide-react";
 import { StatusPill, type StatusPillTone } from "@/shared/components/liyon";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/shared/lib/format";
+import { useLocale } from "@/shared/lib/i18n/client";
 import type { PublicScheduleDto } from "@/features/reservations";
 
 interface PublicScheduleClientProps {
@@ -12,6 +14,7 @@ interface PublicScheduleClientProps {
 }
 
 export function PublicScheduleClient({ initialSchedules }: PublicScheduleClientProps) {
+  const locale = useLocale();
   const [filterType, setFilterType] = useState<"ALL" | "ROOM" | "VEHICLE">("ALL");
 
   const filtered = initialSchedules.filter((item) => {
@@ -27,7 +30,7 @@ export function PublicScheduleClient({ initialSchedules }: PublicScheduleClientP
     const s = new Date(startStr);
     const e = new Date(endStr);
     const pad = (n: number) => String(n).padStart(2, "0");
-    const dateStr = s.toLocaleDateString("th-TH", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+    const dateStr = formatDate(s, locale);
     const timeStr = `${pad(s.getHours())}:${pad(s.getMinutes())} - ${pad(e.getHours())}:${pad(e.getMinutes())} น.`;
     return { dateStr, timeStr };
   };

@@ -40,6 +40,7 @@ import type {
   MaintenanceStatsDto,
 } from "@/features/maintenance";
 import type { PersonnelProfileDto } from "@/features/personnel";
+import { formatDate } from "@/shared/lib/format";
 
 interface MaintenanceAdminClientProps {
   initialTickets: ServiceTicketDto[];
@@ -547,12 +548,7 @@ export function MaintenanceAdminClient({
                         {ticket.slaDeadline ? (
                           <div className={ticket.isBreached ? "text-destructive font-bold flex items-center justify-center gap-1" : "text-muted-foreground"}>
                             {ticket.isBreached && <ShieldAlert className="h-3.5 w-3.5" />}
-                            {new Date(ticket.slaDeadline).toLocaleDateString("th-TH", {
-                              month: "short",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                            {formatDate(ticket.slaDeadline, "th", { time: true })}
                           </div>
                         ) : (
                           "-"

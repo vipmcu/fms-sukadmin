@@ -15,6 +15,8 @@ import {
   Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/shared/lib/format";
+import { useLocale } from "@/shared/lib/i18n/client";
 import { submitStudentApplicationAction } from "@/features/admissions/actions";
 import type { AdmissionRoundDto, StudentApplicationDto } from "@/features/admissions";
 import type { AcademicProgramDto } from "@/features/curriculum";
@@ -28,6 +30,7 @@ export function ApplicationFormClient({
   rounds,
   programs,
 }: ApplicationFormClientProps) {
+  const locale = useLocale();
   const searchParams = useSearchParams();
   const initialRoundId = searchParams.get("roundId") || rounds[0]?.id || "";
 
@@ -288,7 +291,7 @@ export function ApplicationFormClient({
                         <div className="font-semibold text-foreground">{r.roundName}</div>
                         <div className="text-xs text-muted-foreground mt-0.5">
                           ปีการศึกษา {r.academicYear} • รับสมัครถึง{" "}
-                          {new Date(r.endDate).toLocaleDateString("th-TH")}
+                          {formatDate(r.endDate, locale)}
                         </div>
                       </div>
                     </label>

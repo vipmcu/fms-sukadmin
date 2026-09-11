@@ -14,10 +14,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusPill, type StatusPillTone } from "@/shared/components/liyon";
+import { formatDate } from "@/shared/lib/format";
+import { useLocale } from "@/shared/lib/i18n/client";
 import { trackApplicationAction } from "@/features/admissions/actions";
 import type { PublicApplicationStatusDto } from "@/features/admissions";
 
 export function TrackingClient() {
+  const locale = useLocale();
   const searchParams = useSearchParams();
   const initialAppNo = searchParams.get("appNo") || "";
   const initialId = searchParams.get("id") || "";
@@ -207,11 +210,7 @@ export function TrackingClient() {
             <div>
               <span className="text-muted-foreground">วันที่ยื่นใบสมัคร:</span>
               <div className="font-mono text-foreground mt-0.5">
-                {new Date(result.submittedAt).toLocaleDateString("th-TH", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
+                {formatDate(result.submittedAt, locale)}
               </div>
             </div>
             <div>
@@ -239,7 +238,7 @@ export function TrackingClient() {
                 <div>
                   <span className="font-semibold text-foreground">ยื่นใบสมัครสำเร็จ</span>
                   <span className="text-muted-foreground ml-2">
-                    ({new Date(result.submittedAt).toLocaleDateString("th-TH")})
+                    ({formatDate(result.submittedAt, locale)})
                   </span>
                 </div>
               </div>
