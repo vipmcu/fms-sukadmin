@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Loader2, User, Settings } from "lucide-react";
+import { Loader2, User, Settings, Home } from "lucide-react";
 import { AdminShell, useBreadcrumbTailItems, type Crumb } from "@/shared/components/liyon";
 import { AdminSidebarNav } from "@/components/layout/admin-sidebar-nav";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
@@ -41,6 +41,7 @@ export function AdminLayoutClient({ branding, children }: AdminLayoutClientProps
   const breadcrumb: Crumb[] = chain.length === 0 && tail.length === 0 ? [] : [{ label: t("nav.home"), href: "/dashboard" }, ...chain.map((c) => ({ label: t(c.title), href: c.href })), ...tail];
   const ctx = { roles, permissions, isSuperAdmin };
   const links = [
+    { href: "/", label: locale === "en" ? "Public Website" : "หน้าหลักเว็บไซต์", icon: <Home className="h-4 w-4" /> },
     { href: "/me", label: t("account.profile"), icon: <User className="h-4 w-4" /> },
     ...(hasPermission(ctx, P.settingsManage) ? [{ href: "/settings", label: t("nav.settings"), icon: <Settings className="h-4 w-4" /> }] : []),
   ];
@@ -62,6 +63,8 @@ export function AdminLayoutClient({ branding, children }: AdminLayoutClientProps
       breadcrumb={breadcrumb}
       breadcrumbLabel={t("common.breadcrumb")}
       roleLabel={roles[0] ? localizedName(roles[0], locale) : null}
+      publicSiteHref="/"
+      publicSiteLabel={locale === "en" ? "Public Website (Home)" : "หน้าหลักเว็บไซต์ (ดูหน้าเว็บ)"}
       languageSwitcher={<LanguageSwitcher className="lang" />}
       notifications={null}
       account={user ? { name: user.name ?? "", email: user.email ?? "", imageUrl: user.image, initials, links, onSignOut: () => signOut({ callbackUrl: "/login" }), signOutLabel: t("account.logout") } : null}

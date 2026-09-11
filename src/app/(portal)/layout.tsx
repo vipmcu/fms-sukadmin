@@ -14,6 +14,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { auth, resolveTenantBranding } from "@/features/identity/server";
 import { getLocale } from "@/i18n/server";
@@ -94,6 +95,7 @@ export default async function PortalLayout({ children }: { children: React.React
             user={user}
             rightActions={
               <>
+                <ThemeToggle />
                 <LanguageSwitcher />
 
                 {user ? (

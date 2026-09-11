@@ -40,7 +40,7 @@ interface NavItem {
 }
 
 const navLinks: NavItem[] = [
-  { href: "/", labelTh: "หน้าแรก", labelEn: "Home", icon: Home },
+  { href: "/", labelTh: "หน้าหลัก", labelEn: "Home", icon: Home },
   { href: "/news", labelTh: "ข่าวสาร", labelEn: "News", icon: Newspaper },
   { href: "/programs", labelTh: "หลักสูตร", labelEn: "Programs", icon: GraduationCap },
   { href: "/personnel", labelTh: "บุคลากร", labelEn: "Personnel", icon: Users },

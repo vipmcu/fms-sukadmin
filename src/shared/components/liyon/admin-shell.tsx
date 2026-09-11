@@ -40,6 +40,9 @@ export interface AdminShellProps {
   account: SiteNavAccount | null;
   accountLoading?: boolean;
   themeToggleLabel: string;
+  /** ลิงก์กลับหน้าหลักเว็บไซต์สาธารณะ เช่น "/" — มี = แสดงปุ่มไอคอนหน้าหลักบน topbar */
+  publicSiteHref?: string;
+  publicSiteLabel?: string;
 
   collapsed: boolean;
   onToggleCollapsed: () => void;
@@ -96,6 +99,8 @@ export function AdminShell({
   account,
   accountLoading = false,
   themeToggleLabel,
+  publicSiteHref,
+  publicSiteLabel,
   collapsed,
   onToggleCollapsed,
   collapseLabel,
@@ -175,6 +180,20 @@ export function AdminShell({
         <span className="sp" />
 
         {roleLabel && <span className="pill role">{roleLabel}</span>}
+
+        {publicSiteHref && (
+          <Link
+            href={publicSiteHref}
+            className="icon-btn"
+            aria-label={publicSiteLabel ?? "หน้าหลักเว็บไซต์"}
+            title={publicSiteLabel ?? "หน้าหลักเว็บไซต์ (ดูหน้าเว็บ)"}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+          </Link>
+        )}
 
         <button
           type="button"
