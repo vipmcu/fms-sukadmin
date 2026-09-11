@@ -49,16 +49,20 @@ export default async function PortalHomePage() {
   const activeRounds = rounds.slice(0, 2);
 
   return (
-    <div className="space-y-24 py-4">
+    <div className="w-full">
       {/* ══════════════════════════════════════════════════════════════════
-          1. Summit Hero Section (MotionSite AI Inspired with Ambient Video)
+          1. Summit Hero Section (Full Bleed Edge-to-Edge with Ambient Video)
       ══════════════════════════════════════════════════════════════════ */}
       <SummitHero programsCount={featuredPrograms.length || 12} />
 
       {/* ══════════════════════════════════════════════════════════════════
-          2. Essential Digital Services (Lingua Bridge Service Pillars)
+          Page Content (Aligned to Max-W-7xl Grid)
       ══════════════════════════════════════════════════════════════════ */}
-      <section id="portal-services" className="space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 py-16">
+        {/* ══════════════════════════════════════════════════════════════════
+            2. Essential Digital Services (Lingua Bridge Service Pillars)
+        ══════════════════════════════════════════════════════════════════ */}
+        <section id="portal-services" className="space-y-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-border/80 pb-6">
           <div className="space-y-2">
             <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-indigo-600 dark:text-indigo-400 block">
@@ -607,6 +611,7 @@ export default async function PortalHomePage() {
           </div>
         </div>
       </section>
+      </div>
     </div>
   );
 }

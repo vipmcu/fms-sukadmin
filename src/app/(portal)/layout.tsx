@@ -123,7 +123,7 @@ export default async function PortalLayout({ children }: { children: React.React
         role="main"
         aria-label={isEn ? "Main content" : "เนื้อหาหลัก"}
         tabIndex={-1}
-        className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 focus:outline-none"
+        className="flex-1 w-full focus:outline-none"
       >
         {children}
       </main>

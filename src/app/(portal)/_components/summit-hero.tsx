@@ -63,7 +63,7 @@ export function SummitHero({ programsCount = 12 }: SummitHeroProps) {
       <section
         role="region"
         aria-label={isEn ? "Summit Hero Showcase" : "ภาพรวมสถาบันสไตล์ Summit"}
-        className="relative w-full min-h-[82vh] sm:min-h-[88vh] lg:min-h-[92vh] rounded-3xl sm:rounded-[2.5rem] overflow-hidden flex flex-col justify-between p-6 sm:p-10 lg:p-14 text-white shadow-2xl bg-black border border-white/10 select-none"
+        className="relative w-full min-h-[calc(100vh-4rem)] lg:min-h-[calc(100vh-4rem)] flex flex-col justify-between overflow-hidden text-white bg-slate-950 select-none"
       >
         {/* 1. Ambient Background Video with Poster Fallback */}
         <video
@@ -85,173 +85,183 @@ export function SummitHero({ programsCount = 12 }: SummitHeroProps) {
           />
         </video>
 
-        {/* 2. Deep Atmospheric Contrast Gradients */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-black/30 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-transparent pointer-events-none" />
+        {/* 2. Deep Atmospheric Contrast Gradients (Slate & Indigo) */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/30 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/50 to-transparent pointer-events-none" />
 
-        {/* 3. Top Floating Status & Sound Toggle Row */}
-        <div className="relative z-10 flex items-center justify-between gap-4 w-full">
-          {/* Tag Pill */}
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 shadow-xs transition-all">
-            <span className="w-2 h-2 rounded-full bg-[#F4BA3B] animate-pulse" />
-            <span className="text-[10px] sm:text-xs font-semibold tracking-[0.2em] uppercase text-white/95">
-              {isEn ? "Sanctuary of Learning • Elevate FMS" : "สถาปัตยกรรมแห่งปัญญา • ELEVATE FMS"}
-            </span>
-          </div>
+        {/* Subtle Indigo & Amber ambient radial flares */}
+        <div className="absolute -left-20 top-1/4 w-[550px] h-[550px] bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute right-0 bottom-1/4 w-[450px] h-[450px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          {/* Sound Control Toggle */}
-          <button
-            type="button"
-            onClick={toggleMute}
-            aria-label={isMuted ? (isEn ? "Unmute background audio" : "เปิดเสียงพื้นหลัง") : (isEn ? "Mute background audio" : "ปิดเสียงพื้นหลัง")}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 text-white transition-all hover:scale-105 active:scale-95 text-xs font-medium cursor-pointer"
-          >
-            {isMuted ? (
-              <>
-                <VolumeX className="size-3.5 text-white/70" />
-                <span className="text-[11px] font-semibold tracking-wider uppercase text-white/80 hidden sm:inline">
-                  {isEn ? "Sound Off" : "ปิดเสียง"}
-                </span>
-              </>
-            ) : (
-              <>
-                <Volume2 className="size-3.5 text-[#F4BA3B] animate-pulse" />
-                <span className="text-[11px] font-bold tracking-wider uppercase text-[#F4BA3B] hidden sm:inline">
-                  {isEn ? "Sound On" : "เปิดเสียง"}
-                </span>
-              </>
-            )}
-          </button>
-        </div>
+        {/* Smooth Bottom Fade into Page Background */}
+        <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-slate-50/90 dark:from-slate-950 to-transparent pointer-events-none z-1" />
 
-        {/* 4. Center-Left Dramatic Headline & CTA Content */}
-        <div className="relative z-10 max-w-3xl space-y-6 sm:space-y-8 my-auto py-8">
-          {/* Main Huge Display Title */}
-          <h1 className="font-sans font-extrabold text-5xl sm:text-7xl md:text-[5.25rem] lg:text-[6.25rem] xl:text-[7rem] tracking-tight text-white leading-[0.98]">
-            {isEn ? (
-              <>
-                Explore.
-                <br />
-                Dream.
-                <br />
-                <span className="text-[#F4BA3B] drop-shadow-[0_0_35px_rgba(244,186,59,0.45)]">
-                  Discover.
-                </span>
-              </>
-            ) : (
-              <>
-                เรียนรู้.
-                <br />
-                มุ่งมั่น.
-                <br />
-                <span className="text-[#F4BA3B] drop-shadow-[0_0_35px_rgba(244,186,59,0.45)]">
-                  สร้างสรรค์.
-                </span>
-              </>
-            )}
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-sm sm:text-base md:text-lg text-white/85 max-w-xl font-light leading-relaxed">
-            {isEn
-              ? "We inspire journeys that awaken curiosity, cultivate leadership, and create unforgettable educational experiences."
-              : "จุดประกายการเรียนรู้ ปลุกพลังแห่งการค้นพบ และสร้างสรรค์ประสบการณ์การศึกษาสู่มาตรฐานสากล"}
-          </p>
-
-          {/* Action Row */}
-          <div className="flex flex-wrap items-center gap-4 pt-2">
-            {/* Primary CTA */}
-            <Link
-              href="/admissions"
-              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-[#F4BA3B] hover:bg-[#e5ac30] text-slate-950 font-bold text-xs sm:text-sm tracking-wide uppercase shadow-lg shadow-[#F4BA3B]/25 hover:shadow-[#F4BA3B]/40 hover:-translate-y-0.5 active:scale-95 transition-all"
-            >
-              <span>{isEn ? "Start Your Journey" : "เริ่มต้นการเดินทางสู่อนาคต (TCAS)"}</span>
-              <ArrowUpRight className="size-4" />
-            </Link>
-
-            {/* Secondary CTA — Watch Video Modal Trigger */}
-            <button
-              type="button"
-              onClick={() => setVideoModalOpen(true)}
-              className="inline-flex items-center gap-3 px-6 py-4 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/25 text-white font-medium text-xs sm:text-sm transition-all hover:-translate-y-0.5 active:scale-95 group cursor-pointer"
-            >
-              <span className="w-6 h-6 rounded-full bg-white/20 group-hover:bg-[#F4BA3B] group-hover:text-slate-950 flex items-center justify-center transition-colors">
-                <Play className="size-3 fill-current ml-0.5" />
-              </span>
-              <span>{isEn ? "Watch Video" : "ชมวิดีโอแนะนำ"}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* 5. Bottom Navigation Bar */}
-        <div className="relative z-10 pt-8 border-t border-white/15 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          {/* Scroll Down Action */}
-          <a
-            href="#portal-services"
-            className="group inline-flex items-center gap-3 text-white/70 hover:text-white transition-colors cursor-pointer"
-            aria-label={isEn ? "Scroll down to digital services" : "เลื่อนลงไปยังส่วนบริการดิจิทัล"}
-          >
-            <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.25em] uppercase">
-              SCROLL DOWN
-            </span>
-            <span className="w-7 h-7 rounded-full bg-white/10 group-hover:bg-white/20 border border-white/20 flex items-center justify-center transition-all animate-bounce">
-              <ArrowDown className="size-3.5 text-[#F4BA3B]" />
-            </span>
-          </a>
-
-          {/* Right Highlights & Social Media Row */}
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-            {/* Quick Metrics Badges */}
-            <div className="hidden lg:flex items-center gap-2 text-xs font-medium">
-              <span className="px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-white/90">
-                45,000 m² Campus
-              </span>
-              <span className="px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-white/90">
-                98.5% Employment
-              </span>
-              <span className="px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-white/90">
-                {programsCount}+ Programs
+        {/* 3. Centered Content Container aligned with site 7xl grid */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex-1 flex flex-col justify-between py-8 sm:py-10 lg:py-12">
+          {/* Top Floating Status & Sound Toggle Row */}
+          <div className="flex items-center justify-between gap-4 w-full">
+            {/* Tag Pill */}
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 shadow-xs transition-all">
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              <span className="text-[10px] sm:text-xs font-semibold tracking-[0.2em] uppercase text-white/95">
+                {isEn ? "Sanctuary of Learning • Elevate FMS" : "สถาปัตยกรรมแห่งปัญญา • ELEVATE FMS"}
               </span>
             </div>
 
-            {/* Social Icons */}
-            <div className="flex items-center gap-2">
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Facebook"
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-white/80 hover:text-[#F4BA3B] transition-all hover:scale-110"
+            {/* Sound Control Toggle */}
+            <button
+              type="button"
+              onClick={toggleMute}
+              aria-label={isMuted ? (isEn ? "Unmute background audio" : "เปิดเสียงพื้นหลัง") : (isEn ? "Mute background audio" : "ปิดเสียงพื้นหลัง")}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950/60 hover:bg-slate-950/80 backdrop-blur-md border border-white/20 text-white transition-all hover:scale-105 active:scale-95 text-xs font-medium cursor-pointer"
+            >
+              {isMuted ? (
+                <>
+                  <VolumeX className="size-3.5 text-white/70" />
+                  <span className="text-[11px] font-semibold tracking-wider uppercase text-white/80 hidden sm:inline">
+                    {isEn ? "Sound Off" : "ปิดเสียง"}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Volume2 className="size-3.5 text-amber-400 animate-pulse" />
+                  <span className="text-[11px] font-bold tracking-wider uppercase text-amber-400 hidden sm:inline">
+                    {isEn ? "Sound On" : "เปิดเสียง"}
+                  </span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Center-Left Dramatic Headline & CTA Content */}
+          <div className="max-w-3xl space-y-6 sm:space-y-8 my-auto py-8 sm:py-12">
+            {/* Main Huge Display Title */}
+            <h1 className="font-sans font-extrabold text-5xl sm:text-7xl md:text-[5.5rem] lg:text-[6.5rem] xl:text-[7.5rem] tracking-tight text-white leading-[0.96]">
+              {isEn ? (
+                <>
+                  Explore.
+                  <br />
+                  Dream.
+                  <br />
+                  <span className="bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(245,158,11,0.45)]">
+                    Discover.
+                  </span>
+                </>
+              ) : (
+                <>
+                  เรียนรู้.
+                  <br />
+                  มุ่งมั่น.
+                  <br />
+                  <span className="bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(245,158,11,0.45)]">
+                    สร้างสรรค์.
+                  </span>
+                </>
+              )}
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-sm sm:text-base md:text-lg text-slate-200/90 max-w-xl font-light leading-relaxed">
+              {isEn
+                ? "We inspire journeys that awaken curiosity, cultivate leadership, and create unforgettable educational experiences."
+                : "จุดประกายการเรียนรู้ ปลุกพลังแห่งการค้นพบ และสร้างสรรค์ประสบการณ์การศึกษาสู่มาตรฐานสากล"}
+            </p>
+
+            {/* Action Row - Lingua Bridge Indigo & Amber Style */}
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              {/* Primary CTA - Vibrant Indigo */}
+              <Link
+                href="/admissions"
+                className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm tracking-wide uppercase shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:-translate-y-0.5 active:scale-95 transition-all group"
               >
-                <Facebook className="size-3.5" />
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Instagram"
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-white/80 hover:text-[#F4BA3B] transition-all hover:scale-110"
+                <span>{isEn ? "Start Your Journey" : "เริ่มต้นการเดินทางสู่อนาคต (TCAS)"}</span>
+                <ArrowUpRight className="size-4 text-amber-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </Link>
+
+              {/* Secondary CTA — Watch Video Modal Trigger */}
+              <button
+                type="button"
+                onClick={() => setVideoModalOpen(true)}
+                className="inline-flex items-center gap-3 px-6 py-4 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/25 text-white font-medium text-xs sm:text-sm transition-all hover:-translate-y-0.5 active:scale-95 group cursor-pointer"
               >
-                <Instagram className="size-3.5" />
-              </a>
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="YouTube"
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-white/80 hover:text-[#F4BA3B] transition-all hover:scale-110"
-              >
-                <Youtube className="size-3.5" />
-              </a>
-              <a
-                href="https://www.google.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Website"
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-white/80 hover:text-[#F4BA3B] transition-all hover:scale-110"
-              >
-                <Globe className="size-3.5" />
-              </a>
+                <span className="w-6 h-6 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center transition-transform group-hover:scale-110">
+                  <Play className="size-3 fill-current ml-0.5" />
+                </span>
+                <span>{isEn ? "Watch Video" : "ชมวิดีโอแนะนำ"}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Bottom Navigation & Metrics Bar */}
+          <div className="pt-8 border-t border-white/15 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            {/* Scroll Down Action */}
+            <a
+              href="#portal-services"
+              className="group inline-flex items-center gap-3 text-white/80 hover:text-white transition-colors cursor-pointer"
+              aria-label={isEn ? "Scroll down to digital services" : "เลื่อนลงไปยังส่วนบริการดิจิทัล"}
+            >
+              <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.25em] uppercase">
+                SCROLL DOWN
+              </span>
+              <span className="w-7 h-7 rounded-full bg-white/10 group-hover:bg-indigo-600 border border-white/20 flex items-center justify-center transition-all animate-bounce">
+                <ArrowDown className="size-3.5 text-amber-400 group-hover:text-white" />
+              </span>
+            </a>
+
+            {/* Right Highlights & Social Media Row */}
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+              {/* Quick Metrics Badges in Lingua Bridge Theme */}
+              <div className="hidden lg:flex items-center gap-2.5 text-xs font-medium">
+                <span className="px-4 py-1.5 rounded-full bg-slate-950/60 backdrop-blur-md border border-white/15 text-white/90 shadow-xs">
+                  <strong className="text-amber-400 font-bold mr-1">45,000 m²</strong> Campus
+                </span>
+                <span className="px-4 py-1.5 rounded-full bg-slate-950/60 backdrop-blur-md border border-white/15 text-white/90 shadow-xs">
+                  <strong className="text-emerald-400 font-bold mr-1">98.5%</strong> Employment
+                </span>
+                <span className="px-4 py-1.5 rounded-full bg-slate-950/60 backdrop-blur-md border border-white/15 text-white/90 shadow-xs">
+                  <strong className="text-indigo-400 font-bold mr-1">{programsCount}+</strong> Programs
+                </span>
+              </div>
+
+              {/* Social Icons */}
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://facebook.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Facebook"
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-indigo-600 border border-white/15 flex items-center justify-center text-white/80 hover:text-white transition-all hover:scale-110"
+                >
+                  <Facebook className="size-3.5" />
+                </a>
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Instagram"
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-indigo-600 border border-white/15 flex items-center justify-center text-white/80 hover:text-white transition-all hover:scale-110"
+                >
+                  <Instagram className="size-3.5" />
+                </a>
+                <a
+                  href="https://youtube.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="YouTube"
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-indigo-600 border border-white/15 flex items-center justify-center text-white/80 hover:text-white transition-all hover:scale-110"
+                >
+                  <Youtube className="size-3.5" />
+                </a>
+                <a
+                  href="https://www.google.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Website"
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-indigo-600 border border-white/15 flex items-center justify-center text-white/80 hover:text-white transition-all hover:scale-110"
+                >
+                  <Globe className="size-3.5" />
+                </a>
+              </div>
             </div>
           </div>
         </div>
