@@ -36,14 +36,28 @@ export default async function PortalLayout({ children }: { children: React.React
       className="min-h-screen flex flex-col bg-[#ede7dc] text-[#16251e] selection:bg-[#c5a059]/30 selection:text-[#16251e]"
       suppressHydrationWarning
     >
+      {/* Skip to Main Content for Accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
+      >
+        {isEn ? "Skip to main content" : "ข้ามไปยังเนื้อหาหลัก"}
+      </a>
+
       {/* Admin-styled Sticky Full-Width Header */}
       <header
+        role="banner"
+        aria-label={isEn ? "Site header" : "แถบนำทางส่วนหัวเว็บไซต์"}
         className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/90 backdrop-blur-md shadow-xs text-foreground transition-colors"
         suppressHydrationWarning
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Brand Logo & Monogram (Admin Style) */}
-          <Link href="/" className="flex items-center gap-3 group shrink-0 min-w-0 max-w-[220px] sm:max-w-[280px] xl:max-w-[320px]">
+          <Link
+            href="/"
+            aria-label={isEn ? `${brandName} homepage` : `หน้าแรก ${brandName}`}
+            className="flex items-center gap-3 group shrink-0 min-w-0 max-w-[220px] sm:max-w-[280px] xl:max-w-[320px]"
+          >
             <div className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm shadow-xs overflow-hidden shrink-0 group-hover:opacity-90 transition-opacity">
               {branding.logoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -73,7 +87,10 @@ export default async function PortalLayout({ children }: { children: React.React
                   <PortalUserMenu user={user} />
                 ) : (
                   <Button asChild size="sm" className="gap-2 shrink-0 rounded-md">
-                    <Link href="/login?callbackUrl=/reservations/calendar">
+                    <Link
+                      href="/login?callbackUrl=/reservations/calendar"
+                      aria-label={isEn ? "Sign in to system" : "เข้าสู่ระบบบุคลากร"}
+                    >
                       <LogIn className="size-4" />
                       <span>{isEn ? "Sign In" : "เข้าสู่ระบบ"}</span>
                     </Link>
@@ -86,12 +103,22 @@ export default async function PortalLayout({ children }: { children: React.React
       </header>
 
       {/* 2. Main Content Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main
+        id="main-content"
+        role="main"
+        aria-label={isEn ? "Main content" : "เนื้อหาหลัก"}
+        tabIndex={-1}
+        className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 focus:outline-none"
+      >
         {children}
       </main>
 
       {/* 3. Elevate Signature Dark Emerald Footer (#121c17) */}
-      <footer className="dark-emerald-elevate pt-16 pb-12 border-t border-white/10 mt-20">
+      <footer
+        role="contentinfo"
+        aria-label={isEn ? "Site footer" : "ข้อมูลส่วนท้ายเว็บไซต์"}
+        className="dark-emerald-elevate pt-16 pb-12 border-t border-white/10 mt-20"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
             {/* Col 1: Brand & Philosophy */}
@@ -131,28 +158,30 @@ export default async function PortalLayout({ children }: { children: React.React
               <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#dfbe80]">
                 บริการหลัก
               </h4>
-              <ul className="space-y-2 text-xs text-[#a0b0a7]">
-                <li>
-                  <Link href="/admissions" className="hover:text-white transition-colors">
-                    รับสมัครนิสิตใหม่ (TCAS)
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/facilities" className="hover:text-white transition-colors">
-                    ห้องสัมมนา & ยานพาหนะ
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/programs" className="hover:text-white transition-colors">
-                    หลักสูตร ป.ตรี - โท - เอก
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/helpdesk" className="hover:text-white transition-colors">
-                    แจ้งซ่อม & ศูนย์บริการ IT
-                  </Link>
-                </li>
-              </ul>
+              <nav aria-label={isEn ? "Footer main services" : "บริการหลักส่วนท้าย"}>
+                <ul className="space-y-2 text-xs text-[#a0b0a7]">
+                  <li>
+                    <Link href="/admissions" className="hover:text-white transition-colors">
+                      รับสมัครนิสิตใหม่ (TCAS)
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/facilities" className="hover:text-white transition-colors">
+                      ห้องสัมมนา & ยานพาหนะ
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/programs" className="hover:text-white transition-colors">
+                      หลักสูตร ป.ตรี - โท - เอก
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/helpdesk" className="hover:text-white transition-colors">
+                      แจ้งซ่อม & ศูนย์บริการ IT
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
             </div>
 
             {/* Col 3: Online Tracking */}
@@ -163,9 +192,13 @@ export default async function PortalLayout({ children }: { children: React.React
               <div className="space-y-2 text-xs text-[#a0b0a7]">
                 <p>อาคาร 1 คณะวิทยาการจัดการและสำนักงานบริหารส่วนกลาง</p>
                 <p>โทรศัพท์ภายใน: 1234, 5678 • อีเมล: contact@fms.ac.th</p>
-                <div className="pt-3 flex items-center gap-3">
+                <nav
+                  aria-label={isEn ? "Footer online tracking services" : "บริการติดตามผลส่วนท้าย"}
+                  className="pt-3 flex items-center gap-3"
+                >
                   <Link
                     href="/admissions/tracking"
+                    aria-label={isEn ? "Track TCAS admission application" : "ติดตามผลการสมัครนิสิต TCAS"}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-white border border-white/10 text-[11px] transition-all"
                   >
                     <span>ติดตามใบสมัคร</span>
@@ -173,12 +206,13 @@ export default async function PortalLayout({ children }: { children: React.React
                   </Link>
                   <Link
                     href="/helpdesk/tracking"
+                    aria-label={isEn ? "Track maintenance service ticket" : "ติดตามสถานะงานแจ้งซ่อม"}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-white border border-white/10 text-[11px] transition-all"
                   >
                     <span>ติดตามงานแจ้งซ่อม</span>
                     <ArrowUpRight className="size-3 text-[#c5a059]" />
                   </Link>
-                </div>
+                </nav>
               </div>
             </div>
           </div>

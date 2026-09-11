@@ -149,7 +149,7 @@ export function HelpdeskTrackingClient() {
           </p>
         </div>
         <Button asChild variant="ghost" size="sm">
-          <Link href="/helpdesk">
+          <Link href="/helpdesk" aria-label="กลับสู่หน้าระบบแจ้งซ่อม (Back to Helpdesk)">
             <ArrowLeft className="mr-1 h-4 w-4" />
             กลับ
           </Link>
@@ -160,10 +160,12 @@ export function HelpdeskTrackingClient() {
       <div className="rounded-3xl border bg-card p-6 sm:p-8 shadow-sm">
         <form onSubmit={handleSearch} className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-foreground">
+            <label htmlFor="ticket-no" className="text-xs font-semibold text-foreground">
               เลขที่ใบแจ้งซ่อม (Ticket No.) *
             </label>
             <input
+              id="ticket-no"
+              aria-label="เลขที่ใบแจ้งซ่อม (Ticket No.)"
               required
               value={ticketNo}
               onChange={(e) => setTicketNo(e.target.value.trim().toUpperCase())}
@@ -173,10 +175,12 @@ export function HelpdeskTrackingClient() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-foreground">
+            <label htmlFor="requester-phone" className="text-xs font-semibold text-foreground">
               เบอร์โทรศัพท์ที่ใช้แจ้งเรื่อง *
             </label>
             <input
+              id="requester-phone"
+              aria-label="เบอร์โทรศัพท์ที่ใช้แจ้งเรื่อง"
               required
               value={phone}
               onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
@@ -185,7 +189,7 @@ export function HelpdeskTrackingClient() {
             />
           </div>
 
-          <Button type="submit" disabled={isPending} className="w-full gap-2 font-bold">
+          <Button type="submit" disabled={isPending} className="w-full gap-2 font-bold" aria-label="ค้นหางานแจ้งซ่อม (Search ticket)">
             <Search className="h-4 w-4" />
             {isPending ? "กำลังค้นหา..." : "ค้นหางานแจ้งซ่อม"}
           </Button>
@@ -386,12 +390,14 @@ export function HelpdeskTrackingClient() {
                   </div>
 
                   {/* 5-star picker */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2" role="group" aria-label="ให้คะแนนความพึงพอใจ 1 ถึง 5 ดาว">
                     {[1, 2, 3, 4, 5].map((score) => (
                       <button
                         key={score}
                         type="button"
                         onClick={() => setRatingScore(score)}
+                        aria-label={`ให้คะแนน ${score} ดาว จาก 5 ดาว`}
+                        aria-pressed={ratingScore === score}
                         className="p-1 text-amber-500 hover:scale-110 transition-transform"
                       >
                         <Star
@@ -407,10 +413,12 @@ export function HelpdeskTrackingClient() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-muted-foreground">
+                    <label htmlFor="rating-feedback" className="text-xs font-semibold text-muted-foreground">
                       ข้อเสนอแนะเพิ่มเติม (ถ้ามี)
                     </label>
                     <textarea
+                      id="rating-feedback"
+                      aria-label="ข้อเสนอแนะเพิ่มเติมสำหรับการให้บริการ"
                       rows={2}
                       value={ratingFeedback}
                       onChange={(e) => setRatingFeedback(e.target.value)}
@@ -419,7 +427,7 @@ export function HelpdeskTrackingClient() {
                     />
                   </div>
 
-                  <Button type="submit" disabled={isRatingPending} size="sm" className="gap-1.5">
+                  <Button type="submit" disabled={isRatingPending} size="sm" className="gap-1.5" aria-label="ส่งการประเมินความพึงพอใจ">
                     <Send className="h-3.5 w-3.5" />
                     {isRatingPending ? "กำลังบันทึก..." : "ส่งการประเมิน"}
                   </Button>

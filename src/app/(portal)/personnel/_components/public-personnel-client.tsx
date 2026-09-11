@@ -56,6 +56,7 @@ export function PublicPersonnelClient({
             placeholder="ค้นหาชื่อ, ความเชี่ยวชาญ, อีเมล..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            aria-label="ค้นหาบุคลากร"
             className="w-full pl-9 pr-4 py-2 text-sm border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
@@ -65,6 +66,7 @@ export function PublicPersonnelClient({
           <select
             value={selectedDeptId}
             onChange={(e) => setSelectedDeptId(e.target.value)}
+            aria-label="เลือกภาควิชาหรือหน่วยงาน"
             className="text-xs px-3 py-2 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="ALL">ทุกภาควิชา / หน่วยงาน ({personnel.length})</option>
@@ -76,9 +78,11 @@ export function PublicPersonnelClient({
           </select>
 
           {/* Type filter */}
-          <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-lg border border-border/50">
+          <div role="group" aria-label="กรองประเภทบุคลากร (Filter by Personnel Type)" className="flex items-center gap-1 bg-muted/60 p-1 rounded-lg border border-border/50">
             <button
+              type="button"
               onClick={() => setSelectedType("ALL")}
+              aria-pressed={selectedType === "ALL"}
               className={`text-xs px-3 py-1 rounded-md font-medium transition-colors ${
                 selectedType === "ALL"
                   ? "bg-background text-foreground shadow-xs"
@@ -88,7 +92,9 @@ export function PublicPersonnelClient({
               ทั้งหมด
             </button>
             <button
+              type="button"
               onClick={() => setSelectedType("ACADEMIC")}
+              aria-pressed={selectedType === "ACADEMIC"}
               className={`text-xs px-3 py-1 rounded-md font-medium transition-colors ${
                 selectedType === "ACADEMIC"
                   ? "bg-background text-foreground shadow-xs"
@@ -98,7 +104,9 @@ export function PublicPersonnelClient({
               สายวิชาการ
             </button>
             <button
+              type="button"
               onClick={() => setSelectedType("SUPPORT")}
+              aria-pressed={selectedType === "SUPPORT"}
               className={`text-xs px-3 py-1 rounded-md font-medium transition-colors ${
                 selectedType === "SUPPORT"
                   ? "bg-background text-foreground shadow-xs"

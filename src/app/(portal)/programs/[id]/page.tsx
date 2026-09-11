@@ -56,7 +56,7 @@ export default async function PublicProgramDetailPage({ params }: ProgramPagePro
       {/* Back button */}
       <div>
         <Button asChild variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
-          <Link href="/programs">
+          <Link href="/programs" aria-label="ย้อนกลับไปหน้ารวมหลักสูตร (Back to Programs)">
             <ArrowLeft className="size-4" />
             ย้อนกลับไปหน้ารวมหลักสูตร
           </Link>

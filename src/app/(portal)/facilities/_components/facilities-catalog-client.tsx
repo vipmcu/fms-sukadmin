@@ -62,10 +62,11 @@ export function FacilitiesCatalogClient({ resources }: FacilitiesCatalogClientPr
       {/* 2. Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 glass-card-elevate border border-[#ded9cb] rounded-3xl shadow-xs">
         {/* Type Switcher */}
-        <div className="flex items-center gap-1.5 p-1 bg-[#ede7dc]/80 rounded-2xl w-full sm:w-auto">
+        <div role="group" aria-label="กรองประเภทสถานที่และยานพาหนะ (Filter facilities and vehicles)" className="flex items-center gap-1.5 p-1 bg-[#ede7dc]/80 rounded-2xl w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setFilterType("ALL")}
+            aria-pressed={filterType === "ALL"}
             className={`flex-1 sm:flex-none px-4 py-2 text-xs font-medium rounded-xl transition-all ${
               filterType === "ALL"
                 ? "bg-[#1e3328] text-white shadow-xs"
@@ -77,6 +78,7 @@ export function FacilitiesCatalogClient({ resources }: FacilitiesCatalogClientPr
           <button
             type="button"
             onClick={() => setFilterType("ROOM")}
+            aria-pressed={filterType === "ROOM"}
             className={`flex-1 sm:flex-none px-4 py-2 text-xs font-medium rounded-xl transition-all ${
               filterType === "ROOM"
                 ? "bg-[#1e3328] text-white shadow-xs"
@@ -88,6 +90,7 @@ export function FacilitiesCatalogClient({ resources }: FacilitiesCatalogClientPr
           <button
             type="button"
             onClick={() => setFilterType("VEHICLE")}
+            aria-pressed={filterType === "VEHICLE"}
             className={`flex-1 sm:flex-none px-4 py-2 text-xs font-medium rounded-xl transition-all ${
               filterType === "VEHICLE"
                 ? "bg-[#1e3328] text-white shadow-xs"
@@ -106,6 +109,7 @@ export function FacilitiesCatalogClient({ resources }: FacilitiesCatalogClientPr
             placeholder="ค้นหาชื่อ, รหัส, สถานที่..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            aria-label="ค้นหาห้องประชุมหรือยานพาหนะ"
             className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm border border-[#ded9cb] rounded-2xl bg-[#f7f5ef] text-[#16251e] placeholder:text-[#55635c]/60 focus:outline-none focus:ring-2 focus:ring-[#1e3328]/30"
           />
         </div>

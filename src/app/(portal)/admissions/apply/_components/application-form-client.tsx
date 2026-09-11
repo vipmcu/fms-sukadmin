@@ -216,7 +216,7 @@ export function ApplicationFormClient({
           </p>
         </div>
         <Button asChild variant="ghost" size="sm">
-          <Link href="/admissions">
+          <Link href="/admissions" aria-label="กลับหน้ารวมรอบการรับสมัคร (Back to Admissions)">
             <ArrowLeft className="mr-1 h-4 w-4" />
             กลับหน้ารวมรอบ
           </Link>
@@ -266,10 +266,10 @@ export function ApplicationFormClient({
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-foreground">
+                <label id="admission-round-label" className="text-sm font-semibold text-foreground">
                   รอบการรับสมัครที่ต้องการยื่น *
                 </label>
-                <div className="space-y-2">
+                <div role="radiogroup" aria-labelledby="admission-round-label" className="space-y-2">
                   {rounds.map((r) => (
                     <label
                       key={r.id}
@@ -283,6 +283,7 @@ export function ApplicationFormClient({
                         type="radio"
                         name="roundId"
                         value={r.id}
+                        aria-label={r.roundName}
                         checked={formData.roundId === r.id}
                         onChange={(e) => setFormData({ ...formData, roundId: e.target.value })}
                         className="mt-1 mr-3"
@@ -300,10 +301,10 @@ export function ApplicationFormClient({
               </div>
 
               <div className="space-y-2 pt-2">
-                <label className="text-sm font-semibold text-foreground">
+                <label id="admission-program-label" className="text-sm font-semibold text-foreground">
                   หลักสูตร / สาขาวิชาที่ต้องการศึกษา *
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div role="radiogroup" aria-labelledby="admission-program-label" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {programs.map((p) => (
                     <label
                       key={p.id}
@@ -317,6 +318,7 @@ export function ApplicationFormClient({
                         type="radio"
                         name="programId"
                         value={p.id}
+                        aria-label={p.nameTh}
                         checked={formData.programId === p.id}
                         onChange={(e) => setFormData({ ...formData, programId: e.target.value })}
                         className="mt-1 mr-3"
@@ -350,8 +352,10 @@ export function ApplicationFormClient({
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">คำนำหน้า *</label>
+                  <label htmlFor="applicant-title" className="text-xs font-semibold text-foreground">คำนำหน้า *</label>
                   <select
+                    id="applicant-title"
+                    aria-label="คำนำหน้าชื่อ"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     className="w-full px-3 py-2 text-sm border border-input rounded-md bg-background"
@@ -363,10 +367,12 @@ export function ApplicationFormClient({
                 </div>
 
                 <div className="sm:col-span-3 space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">
+                  <label htmlFor="applicant-name-th" className="text-xs font-semibold text-foreground">
                     ชื่อ-นามสกุล (ภาษาไทย) *
                   </label>
                   <input
+                    id="applicant-name-th"
+                    aria-label="ชื่อ-นามสกุล ภาษาไทย"
                     required
                     value={formData.applicantNameTh}
                     onChange={(e) => setFormData({ ...formData, applicantNameTh: e.target.value })}
@@ -377,10 +383,12 @@ export function ApplicationFormClient({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">
+                <label htmlFor="applicant-name-en" className="text-xs font-semibold text-foreground">
                   ชื่อ-นามสกุล (ภาษาอังกฤษ)
                 </label>
                 <input
+                  id="applicant-name-en"
+                  aria-label="ชื่อ-นามสกุล ภาษาอังกฤษ"
                   value={formData.applicantNameEn}
                   onChange={(e) => setFormData({ ...formData, applicantNameEn: e.target.value })}
                   placeholder="เช่น Somchai Jaidee"
@@ -390,7 +398,7 @@ export function ApplicationFormClient({
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-foreground">
+                  <label htmlFor="applicant-national-id" className="text-xs font-semibold text-foreground">
                     เลขประจำตัวประชาชน 13 หลัก *
                   </label>
                   {formData.nationalId.length === 13 && (
@@ -404,6 +412,8 @@ export function ApplicationFormClient({
                   )}
                 </div>
                 <input
+                  id="applicant-national-id"
+                  aria-label="เลขประจำตัวประชาชน 13 หลัก"
                   required
                   maxLength={13}
                   value={formData.nationalId}
@@ -415,10 +425,12 @@ export function ApplicationFormClient({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">
+                  <label htmlFor="applicant-school" className="text-xs font-semibold text-foreground">
                     สถานศึกษาเดิม / โรงเรียนที่จบ
                   </label>
                   <input
+                    id="applicant-school"
+                    aria-label="สถานศึกษาเดิม หรือโรงเรียนที่จบ"
                     value={formData.schoolName}
                     onChange={(e) => setFormData({ ...formData, schoolName: e.target.value })}
                     placeholder="เช่น โรงเรียนเตรียมอุดมศึกษา"
@@ -427,10 +439,12 @@ export function ApplicationFormClient({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">
+                  <label htmlFor="applicant-gpax" className="text-xs font-semibold text-foreground">
                     เกรดเฉลี่ยสะสม (GPAX 4 หรือ 5 ภาคเรียน)
                   </label>
                   <input
+                    id="applicant-gpax"
+                    aria-label="เกรดเฉลี่ยสะสม GPAX"
                     type="number"
                     step="0.01"
                     min="0"
@@ -445,10 +459,12 @@ export function ApplicationFormClient({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">
+                  <label htmlFor="applicant-phone" className="text-xs font-semibold text-foreground">
                     เบอร์โทรศัพท์มือถือ *
                   </label>
                   <input
+                    id="applicant-phone"
+                    aria-label="เบอร์โทรศัพท์มือถือ"
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -458,10 +474,12 @@ export function ApplicationFormClient({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">
+                  <label htmlFor="applicant-email" className="text-xs font-semibold text-foreground">
                     อีเมลติดต่อ *
                   </label>
                   <input
+                    id="applicant-email"
+                    aria-label="อีเมลติดต่อ"
                     type="email"
                     required
                     value={formData.email}
@@ -507,20 +525,24 @@ export function ApplicationFormClient({
 
                 <div className="max-w-md mx-auto space-y-2 pt-2 text-left">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-muted-foreground">
+                    <label htmlFor="applicant-doc-name" className="text-xs font-semibold text-muted-foreground">
                       ชื่อไฟล์เอกสาร
                     </label>
                     <input
+                      id="applicant-doc-name"
+                      aria-label="ชื่อไฟล์เอกสารหลักฐานการศึกษา"
                       value={formData.documentName}
                       onChange={(e) => setFormData({ ...formData, documentName: e.target.value })}
                       className="w-full px-3 py-1.5 text-xs border rounded-md bg-background"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-muted-foreground">
+                    <label htmlFor="applicant-doc-url" className="text-xs font-semibold text-muted-foreground">
                       ลิงก์ไฟล์ หรือที่จัดเก็บเอกสาร
                     </label>
                     <input
+                      id="applicant-doc-url"
+                      aria-label="ลิงก์ไฟล์ หรือที่จัดเก็บเอกสารหลักฐาน"
                       value={formData.documentUrl}
                       onChange={(e) => setFormData({ ...formData, documentUrl: e.target.value })}
                       className="w-full px-3 py-1.5 text-xs font-mono border rounded-md bg-background"

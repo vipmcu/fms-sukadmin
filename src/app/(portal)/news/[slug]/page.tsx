@@ -42,7 +42,7 @@ export default async function PublicArticleDetailPage({ params }: ArticlePagePro
       {/* Back button */}
       <div>
         <Button asChild variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
-          <Link href="/news">
+          <Link href="/news" aria-label="ย้อนกลับไปหน้ารวมข่าว (Back to News)">
             <ArrowLeft className="size-4" />
             ย้อนกลับไปหน้ารวมข่าว
           </Link>

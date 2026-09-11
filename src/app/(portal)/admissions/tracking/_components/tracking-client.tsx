@@ -118,7 +118,7 @@ export function TrackingClient() {
           </p>
         </div>
         <Button asChild variant="ghost" size="sm">
-          <Link href="/admissions">
+          <Link href="/admissions" aria-label="กลับสู่หน้ารับสมัครเข้าศึกษา (Back to Admissions)">
             <ArrowLeft className="mr-1 h-4 w-4" />
             กลับ
           </Link>
@@ -129,10 +129,12 @@ export function TrackingClient() {
       <div className="rounded-3xl border bg-card p-6 sm:p-8 shadow-sm">
         <form onSubmit={handleSearch} className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-foreground">
+            <label htmlFor="national-id" className="text-xs font-semibold text-foreground">
               เลขประจำตัวประชาชน 13 หลัก *
             </label>
             <input
+              id="national-id"
+              aria-label="เลขประจำตัวประชาชน 13 หลัก"
               required
               value={nationalId}
               onChange={(e) => setNationalId(e.target.value.replace(/\D/g, ""))}
@@ -142,10 +144,12 @@ export function TrackingClient() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-foreground">
+            <label htmlFor="application-no" className="text-xs font-semibold text-foreground">
               เลขที่ใบสมัคร (Application No.) *
             </label>
             <input
+              id="application-no"
+              aria-label="เลขที่ใบสมัคร (Application No.)"
               required
               value={applicationNo}
               onChange={(e) => setApplicationNo(e.target.value.trim().toUpperCase())}
@@ -154,7 +158,7 @@ export function TrackingClient() {
             />
           </div>
 
-          <Button type="submit" disabled={isPending} className="w-full gap-2 font-bold">
+          <Button type="submit" disabled={isPending} className="w-full gap-2 font-bold" aria-label="ค้นหาสถานะใบสมัคร (Search application)">
             <Search className="h-4 w-4" />
             {isPending ? "กำลังค้นหา..." : "ค้นหาสถานะใบสมัคร"}
           </Button>

@@ -59,7 +59,7 @@ export default async function PublicPersonnelDetailPage({ params }: PersonnelPag
       {/* Back button */}
       <div>
         <Button asChild variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
-          <Link href="/personnel">
+          <Link href="/personnel" aria-label="ย้อนกลับไปทำเนียบบุคลากร (Back to Personnel)">
             <ArrowLeft className="size-4" />
             ย้อนกลับไปทำเนียบบุคลากร
           </Link>

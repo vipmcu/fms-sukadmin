@@ -139,6 +139,7 @@ export default async function AssetQrPage({ params }: AssetQrPageProps) {
                 href={`/helpdesk?assetId=${asset.id}&location=${encodeURIComponent(
                   asset.location || ""
                 )}`}
+                aria-label="แจ้งซ่อมหรือแจ้งปัญหาครุภัณฑ์ชิ้นนี้ (Report issue for this asset)"
               >
                 <Wrench className="h-4 w-4" />
                 แจ้งซ่อม / แจ้งปัญหาครุภัณฑ์ชิ้นนี้

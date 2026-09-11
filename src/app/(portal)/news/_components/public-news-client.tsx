@@ -122,15 +122,17 @@ export function PublicNewsClient({ categories, articles }: PublicNewsClientProps
             placeholder="ค้นหาตามชื่อข่าวหรือเนื้อหา..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            aria-label={locale === "en" ? "Search news and announcements" : "ค้นหาตามชื่อข่าวหรือเนื้อหา"}
             className="w-full pl-9 pr-4 py-2 text-sm border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+        <div role="group" aria-label="กรองหมวดหมู่ข่าวสาร (Filter by News Category)" className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
           <Button
             variant={selectedCatId === "ALL" ? "default" : "outline"}
             size="sm"
             onClick={() => setSelectedCatId("ALL")}
+            aria-pressed={selectedCatId === "ALL"}
             className="text-xs h-8 rounded-full"
           >
             ทุกหมวดหมู่ ({articles.length})
@@ -141,6 +143,7 @@ export function PublicNewsClient({ categories, articles }: PublicNewsClientProps
               variant={selectedCatId === c.id ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedCatId(c.id)}
+              aria-pressed={selectedCatId === c.id}
               className="text-xs h-8 rounded-full"
             >
               {c.nameTh}

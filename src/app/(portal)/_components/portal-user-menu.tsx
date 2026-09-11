@@ -46,7 +46,7 @@ export function PortalUserMenu({ user }: PortalUserMenuProps) {
         <button
           type="button"
           className="flex items-center gap-2 p-1 pl-1.5 pr-2 rounded-full hover:bg-accent/80 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0 border border-border/60"
-          aria-label={isEn ? "User menu" : "เมนูผู้ใช้งาน"}
+          aria-label={isEn ? `User account menu for ${user.name || user.email || "staff"}` : `เมนูบัญชีผู้ใช้งาน ${user.name || user.email || "บุคลากร"}`}
         >
           <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground font-bold text-xs flex items-center justify-center overflow-hidden shadow-xs shrink-0">
             {user.image ? (

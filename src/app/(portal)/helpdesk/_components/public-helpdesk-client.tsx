@@ -196,6 +196,7 @@ export function PublicHelpdeskClient({ categories }: PublicHelpdeskClientProps) 
 
         <Link
           href="/helpdesk/tracking"
+          aria-label="ติดตามสถานะที่เคยแจ้งไว้ (Track existing ticket)"
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[#ded9cb] hover:border-[#c5a059] hover:bg-[#ede7dc] text-[#16251e] text-xs font-medium transition-all self-start sm:self-auto"
         >
           <Search className="h-3.5 w-3.5 text-[#c5a059]" />
@@ -208,10 +209,10 @@ export function PublicHelpdeskClient({ categories }: PublicHelpdeskClientProps) 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Service Categories Radio Cards */}
           <div className="space-y-3">
-            <label className="text-xs font-semibold text-[#16251e] uppercase tracking-wider block">
+            <label id="category-group-label" className="text-xs font-semibold text-[#16251e] uppercase tracking-wider block">
               เลือกประเภทงานบริการ / หมวดหมู่ปัญหา *
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div role="radiogroup" aria-labelledby="category-group-label" className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {categories.map((cat) => (
                 <label
                   key={cat.id}
@@ -228,6 +229,7 @@ export function PublicHelpdeskClient({ categories }: PublicHelpdeskClientProps) 
                     checked={formData.categoryId === cat.id}
                     onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
                     className="sr-only"
+                    aria-label={cat.nameTh}
                   />
                   <div className="mb-2">{getCategoryIcon(cat.code)}</div>
                   <div className="font-serif-luxury text-sm text-[#16251e]">
@@ -244,10 +246,12 @@ export function PublicHelpdeskClient({ categories }: PublicHelpdeskClientProps) 
           {/* Issue Details */}
           <div className="space-y-4 pt-2">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#16251e]">
+              <label htmlFor="ticket-title" className="text-xs font-medium text-[#16251e]">
                 หัวข้อปัญหา / อาการผิดปกติที่พบ *
               </label>
               <input
+                id="ticket-title"
+                aria-label="หัวข้อปัญหา หรืออาการผิดปกติที่พบ"
                 required
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
@@ -258,10 +262,12 @@ export function PublicHelpdeskClient({ categories }: PublicHelpdeskClientProps) 
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-[#16251e]">
+                <label htmlFor="ticket-location" className="text-xs font-medium text-[#16251e]">
                   สถานที่เกิดปัญหา (อาคาร / ชั้น / ห้อง) *
                 </label>
                 <input
+                  id="ticket-location"
+                  aria-label="สถานที่เกิดปัญหา อาคาร ชั้น ห้อง"
                   required
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -271,10 +277,12 @@ export function PublicHelpdeskClient({ categories }: PublicHelpdeskClientProps) 
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-[#16251e]">
+                <label htmlFor="ticket-priority" className="text-xs font-medium text-[#16251e]">
                   ระดับความเร่งด่วน *
                 </label>
                 <select
+                  id="ticket-priority"
+                  aria-label="ระดับความเร่งด่วน"
                   value={formData.priority}
                   onChange={(e) =>
                     setFormData({
@@ -293,10 +301,12 @@ export function PublicHelpdeskClient({ categories }: PublicHelpdeskClientProps) 
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#16251e]">
+              <label htmlFor="ticket-description" className="text-xs font-medium text-[#16251e]">
                 รายละเอียดเพิ่มเติมของอาการชำรุด *
               </label>
               <textarea
+                id="ticket-description"
+                aria-label="รายละเอียดเพิ่มเติมของอาการชำรุด"
                 required
                 rows={4}
                 value={formData.description}
@@ -307,10 +317,12 @@ export function PublicHelpdeskClient({ categories }: PublicHelpdeskClientProps) 
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#16251e]">
+              <label htmlFor="ticket-photourl" className="text-xs font-medium text-[#16251e]">
                 รูปถ่ายจุดชำรุด (ลิงก์รูปภาพ หรือ Google Drive / Cloud URL)
               </label>
               <input
+                id="ticket-photourl"
+                aria-label="ลิงก์รูปถ่ายจุดชำรุด"
                 value={formData.photoUrl}
                 onChange={(e) => setFormData({ ...formData, photoUrl: e.target.value })}
                 placeholder="https://... (หากมี)"
@@ -327,10 +339,12 @@ export function PublicHelpdeskClient({ categories }: PublicHelpdeskClientProps) 
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-[#16251e]">
+                <label htmlFor="requester-name" className="text-xs font-medium text-[#16251e]">
                   ชื่อ-นามสกุล *
                 </label>
                 <input
+                  id="requester-name"
+                  aria-label="ชื่อ-นามสกุล ผู้แจ้งเรื่อง"
                   required
                   value={formData.requesterName}
                   onChange={(e) => setFormData({ ...formData, requesterName: e.target.value })}
@@ -340,10 +354,12 @@ export function PublicHelpdeskClient({ categories }: PublicHelpdeskClientProps) 
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-[#16251e]">
+                <label htmlFor="requester-phone" className="text-xs font-medium text-[#16251e]">
                   เบอร์โทรศัพท์ติดต่อ *
                 </label>
                 <input
+                  id="requester-phone"
+                  aria-label="เบอร์โทรศัพท์ติดต่อ"
                   required
                   value={formData.requesterPhone}
                   onChange={(e) => setFormData({ ...formData, requesterPhone: e.target.value })}
@@ -353,10 +369,12 @@ export function PublicHelpdeskClient({ categories }: PublicHelpdeskClientProps) 
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-[#16251e]">
+                <label htmlFor="requester-email" className="text-xs font-medium text-[#16251e]">
                   อีเมล *
                 </label>
                 <input
+                  id="requester-email"
+                  aria-label="อีเมลติดต่อ"
                   type="email"
                   required
                   value={formData.requesterEmail}
@@ -376,6 +394,7 @@ export function PublicHelpdeskClient({ categories }: PublicHelpdeskClientProps) 
             <button
               type="submit"
               disabled={isPending}
+              aria-label="ส่งเรื่องแจ้งซ่อม (Submit maintenance request)"
               className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-[#1e3328] hover:bg-[#13221b] text-white text-xs font-medium uppercase tracking-wider transition-all shadow-md w-full sm:w-auto justify-center"
             >
               {isPending ? "กำลังส่งคำขอ..." : "ส่งเรื่องแจ้งซ่อม"}

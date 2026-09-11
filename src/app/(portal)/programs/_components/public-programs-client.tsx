@@ -75,14 +75,16 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
             placeholder="ค้นหาชื่อหลักสูตร, สาขาวิชา, ปริญญา..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            aria-label="ค้นหาชื่อหลักสูตร, สาขาวิชา, ปริญญา"
             className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm border border-[#ded9cb] rounded-2xl bg-[#f7f5ef] text-[#16251e] placeholder:text-[#55635c]/60 focus:outline-none focus:ring-2 focus:ring-[#1e3328]/30"
           />
         </div>
 
-        <div className="flex items-center gap-1.5 p-1 bg-[#ede7dc]/80 rounded-2xl w-full sm:w-auto overflow-x-auto">
+        <div role="group" aria-label="กรองระดับการศึกษา (Filter by Education Level)" className="flex items-center gap-1.5 p-1 bg-[#ede7dc]/80 rounded-2xl w-full sm:w-auto overflow-x-auto">
           <button
             type="button"
             onClick={() => setSelectedLevel("ALL")}
+            aria-pressed={selectedLevel === "ALL"}
             className={`px-4 py-2 text-xs font-medium rounded-xl transition-all ${
               selectedLevel === "ALL"
                 ? "bg-[#1e3328] text-white shadow-xs"
@@ -94,6 +96,7 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
           <button
             type="button"
             onClick={() => setSelectedLevel("BACHELOR")}
+            aria-pressed={selectedLevel === "BACHELOR"}
             className={`px-4 py-2 text-xs font-medium rounded-xl transition-all ${
               selectedLevel === "BACHELOR"
                 ? "bg-[#1e3328] text-white shadow-xs"
@@ -105,6 +108,7 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
           <button
             type="button"
             onClick={() => setSelectedLevel("MASTER")}
+            aria-pressed={selectedLevel === "MASTER"}
             className={`px-4 py-2 text-xs font-medium rounded-xl transition-all ${
               selectedLevel === "MASTER"
                 ? "bg-[#1e3328] text-white shadow-xs"
@@ -116,6 +120,7 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
           <button
             type="button"
             onClick={() => setSelectedLevel("DOCTORAL")}
+            aria-pressed={selectedLevel === "DOCTORAL"}
             className={`px-4 py-2 text-xs font-medium rounded-xl transition-all ${
               selectedLevel === "DOCTORAL"
                 ? "bg-[#1e3328] text-white shadow-xs"

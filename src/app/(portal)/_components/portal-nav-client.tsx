@@ -64,7 +64,11 @@ export function PortalNavClient({ user, rightActions }: PortalNavClientProps) {
   return (
     <>
       {/* Desktop Navigation Links (Admin Style) */}
-      <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5">
+      <nav
+        role="navigation"
+        aria-label={isEn ? "Main navigation" : "เมนูหลักของเว็บไซต์"}
+        className="hidden lg:flex items-center gap-1 xl:gap-1.5"
+      >
         {navLinks.map((link) => {
           const active = isActive(link.href);
           const label = isEn ? link.labelEn : link.labelTh;
@@ -72,6 +76,8 @@ export function PortalNavClient({ user, rightActions }: PortalNavClientProps) {
             <Link
               key={link.href}
               href={link.href}
+              aria-current={active ? "page" : undefined}
+              aria-label={label}
               className={cn(
                 "px-3 py-1.5 text-xs xl:text-sm font-medium transition-colors rounded-md whitespace-nowrap shrink-0",
                 active
@@ -96,7 +102,9 @@ export function PortalNavClient({ user, rightActions }: PortalNavClientProps) {
           size="icon"
           onClick={() => setMobileOpen(!mobileOpen)}
           className="lg:hidden text-muted-foreground hover:text-foreground"
-          aria-label={mobileOpen ? (isEn ? "Close menu" : "ปิดเมนู") : (isEn ? "Open menu" : "เปิดเมนู")}
+          aria-label={mobileOpen ? (isEn ? "Close navigation menu" : "ปิดเมนูนำทาง") : (isEn ? "Open navigation menu" : "เปิดเมนูนำทาง")}
+          aria-expanded={mobileOpen}
+          aria-controls="mobile-nav-drawer"
         >
           {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
         </Button>
@@ -104,7 +112,13 @@ export function PortalNavClient({ user, rightActions }: PortalNavClientProps) {
 
       {/* Mobile Slide-Down Drawer */}
       {mobileOpen && (
-        <div className="lg:hidden fixed inset-x-4 top-18 z-50 rounded-2xl border border-border bg-card text-card-foreground p-5 shadow-xl animate-in slide-in-from-top-2 duration-200">
+        <div
+          id="mobile-nav-drawer"
+          role="dialog"
+          aria-modal="true"
+          aria-label={isEn ? "Mobile navigation menu" : "เมนูนำทางบนมือถือ"}
+          className="lg:hidden fixed inset-x-4 top-18 z-50 rounded-2xl border border-border bg-card text-card-foreground p-5 shadow-xl animate-in slide-in-from-top-2 duration-200"
+        >
           <div className="space-y-4 max-h-[calc(100vh-6rem)] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <span className="font-bold text-sm text-foreground">
@@ -114,44 +128,52 @@ export function PortalNavClient({ user, rightActions }: PortalNavClientProps) {
                 type="button"
                 onClick={() => setMobileOpen(false)}
                 className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent"
-                aria-label="Close"
+                aria-label={isEn ? "Close navigation menu" : "ปิดเมนูนำทาง"}
               >
                 <X className="size-4" />
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-              {navLinks.map((link) => {
-                const Icon = link.icon;
-                const active = isActive(link.href);
-                const label = isEn ? link.labelEn : link.labelTh;
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileOpen(false)}
-                    className={cn(
-                      "flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                      active
-                        ? "bg-primary text-primary-foreground font-semibold"
-                        : "text-foreground hover:bg-accent"
-                    )}
-                  >
-                    <Icon className={cn("size-4", active ? "text-primary-foreground" : "text-muted-foreground")} />
-                    <span>{label}</span>
-                  </Link>
-                );
-              })}
-            </div>
+            <nav aria-label={isEn ? "Mobile menu navigation" : "เมนูนำทางบนมือถือ"}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                {navLinks.map((link) => {
+                  const Icon = link.icon;
+                  const active = isActive(link.href);
+                  const label = isEn ? link.labelEn : link.labelTh;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      aria-current={active ? "page" : undefined}
+                      aria-label={label}
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        "flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                        active
+                          ? "bg-primary text-primary-foreground font-semibold"
+                          : "text-foreground hover:bg-accent"
+                      )}
+                    >
+                      <Icon className={cn("size-4", active ? "text-primary-foreground" : "text-muted-foreground")} />
+                      <span>{label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </nav>
 
             {/* Quick Tracking Services */}
             <div className="pt-3 border-t border-border space-y-2">
               <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-1">
                 {isEn ? "Online Tracking Services" : "บริการติดตามผลออนไลน์"}
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
+              <nav
+                aria-label={isEn ? "Mobile tracking services" : "บริการติดตามผลออนไลน์บนมือถือ"}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs"
+              >
                 <Link
                   href="/admissions/tracking"
+                  aria-label={isEn ? "Track TCAS admission application" : "ติดตามผลการสมัครนิสิต TCAS"}
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center justify-between px-3.5 py-2 rounded-lg text-foreground hover:bg-accent border border-border"
                 >
@@ -163,6 +185,7 @@ export function PortalNavClient({ user, rightActions }: PortalNavClientProps) {
                 </Link>
                 <Link
                   href="/helpdesk/tracking"
+                  aria-label={isEn ? "Track maintenance service ticket" : "ติดตามสถานะงานแจ้งซ่อม"}
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center justify-between px-3.5 py-2 rounded-lg text-foreground hover:bg-accent border border-border"
                 >
@@ -172,7 +195,7 @@ export function PortalNavClient({ user, rightActions }: PortalNavClientProps) {
                   </span>
                   <ArrowUpRight className="size-3 text-muted-foreground" />
                 </Link>
-              </div>
+              </nav>
             </div>
 
             {/* User Account / Login in Drawer */}
@@ -202,13 +225,21 @@ export function PortalNavClient({ user, rightActions }: PortalNavClientProps) {
 
                   <div className="grid grid-cols-2 gap-2">
                     <Button asChild size="sm" variant="outline" className="justify-center gap-1.5 rounded-lg text-xs">
-                      <Link href="/dashboard" onClick={() => setMobileOpen(false)}>
+                      <Link
+                        href="/dashboard"
+                        aria-label={isEn ? "Go to Staff Console" : "ไปยังระบบจัดการ Staff Console"}
+                        onClick={() => setMobileOpen(false)}
+                      >
                         <LayoutDashboard className="size-3.5 text-muted-foreground" />
                         <span>Staff Console</span>
                       </Link>
                     </Button>
                     <Button asChild size="sm" variant="outline" className="justify-center gap-1.5 rounded-lg text-xs">
-                      <Link href="/me" onClick={() => setMobileOpen(false)}>
+                      <Link
+                        href="/me"
+                        aria-label={isEn ? "View my profile" : "ดูข้อมูลโปรไฟล์"}
+                        onClick={() => setMobileOpen(false)}
+                      >
                         <User className="size-3.5 text-muted-foreground" />
                         <span>{isEn ? "Profile" : "โปรไฟล์"}</span>
                       </Link>
@@ -219,6 +250,7 @@ export function PortalNavClient({ user, rightActions }: PortalNavClientProps) {
                     type="button"
                     variant="ghost"
                     size="sm"
+                    aria-label={isEn ? "Sign out of account" : "ออกจากระบบ"}
                     onClick={() => signOut({ callbackUrl: "/" })}
                     className="w-full justify-center gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive text-xs"
                   >
@@ -228,7 +260,11 @@ export function PortalNavClient({ user, rightActions }: PortalNavClientProps) {
                 </div>
               ) : (
                 <Button asChild size="sm" className="w-full justify-center gap-2 rounded-lg">
-                  <Link href="/login?callbackUrl=/reservations/calendar" onClick={() => setMobileOpen(false)}>
+                  <Link
+                    href="/login?callbackUrl=/reservations/calendar"
+                    aria-label={isEn ? "Staff Sign In" : "เข้าสู่ระบบบุคลากร"}
+                    onClick={() => setMobileOpen(false)}
+                  >
                     <LogIn className="size-4" />
                     <span>{isEn ? "Staff Sign In" : "เข้าสู่ระบบบุคลากร"}</span>
                   </Link>

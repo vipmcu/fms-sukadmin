@@ -56,7 +56,7 @@ export function PublicScheduleClient({ initialSchedules }: PublicScheduleClientP
         </div>
 
         <Button asChild size="sm" className="gap-2 shrink-0">
-          <Link href="/login?callbackUrl=/reservations/calendar">
+          <Link href="/login?callbackUrl=/reservations/calendar" aria-label="เข้าสู่ระบบเพื่อจอง (Sign in to reserve)">
             <LogIn className="size-4" />
             <span>เข้าสู่ระบบเพื่อจอง</span>
           </Link>
@@ -72,12 +72,14 @@ export function PublicScheduleClient({ initialSchedules }: PublicScheduleClientP
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2">
+      <div role="group" aria-label="กรองประเภทการจอง (Filter by Reservation Type)" className="flex items-center gap-2">
         {(["ALL", "ROOM", "VEHICLE"] as const).map((type) => (
           <button
             key={type}
             type="button"
             onClick={() => setFilterType(type)}
+            aria-pressed={filterType === type}
+            aria-label={type === "ALL" ? "แสดงทั้งหมด" : type === "ROOM" ? "เฉพาะห้องประชุม" : "เฉพาะยานพาหนะ"}
             className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors ${
               filterType === type
                 ? "bg-primary text-primary-foreground"
