@@ -17,12 +17,12 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/shared/lib/format";
 import { getPortalTenantId } from "@/shared/lib/portal-tenant";
-import { getLocale } from "@/i18n/server";
 import { listNewsArticles } from "@/features/news/server";
 import type { NewsArticleDto } from "@/features/news";
 import { listPrograms } from "@/features/curriculum/server";
 import { listResources } from "@/features/reservations/server";
 import { listAdmissionRounds } from "@/features/admissions/server";
+import { SummitHero } from "./_components/summit-hero";
 
 export const metadata = {
   title: "ELEVATE • FMS | คณะและสำนักงานบริหารส่วนกลาง",
@@ -31,11 +31,7 @@ export const metadata = {
 };
 
 export default async function PortalHomePage() {
-  const [tenantId, locale] = await Promise.all([
-    getPortalTenantId(),
-    getLocale(),
-  ]);
-  const isEn = locale === "en";
+  const tenantId = await getPortalTenantId();
 
   // Load live data across core modules in parallel
   const [newsItems, programs, resources, rounds] = await Promise.all([
@@ -55,148 +51,9 @@ export default async function PortalHomePage() {
   return (
     <div className="space-y-24 py-4">
       {/* ══════════════════════════════════════════════════════════════════
-          1. Titan-Inspired Split Architectural Hero Section
+          1. Summit Hero Section (MotionSite AI Inspired with Ambient Video)
       ══════════════════════════════════════════════════════════════════ */}
-      <section
-        role="region"
-        aria-label={isEn ? "Hero Section" : "ส่วนแนะนำสถาบัน"}
-        className="w-full rounded-3xl sm:rounded-[2rem] border border-[#ded9cb] dark:border-border/80 bg-white dark:bg-card/70 overflow-hidden shadow-sm transition-colors"
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#ded9cb] dark:divide-border/80">
-          {/* Left Column: Typography, Notice, Actions & Description */}
-          <div className="p-8 sm:p-12 lg:p-14 xl:p-16 flex flex-col justify-between min-h-[580px] lg:min-h-[660px]">
-            <div>
-              {/* Notice / Announcement Kicker */}
-              <Link
-                href="/admissions"
-                className="inline-flex items-center gap-2.5 text-xs font-medium text-[#16251e] dark:text-foreground hover:opacity-80 transition-opacity group mb-8 sm:mb-12"
-              >
-                <span className="px-2 py-0.5 rounded-full bg-[#ff8a00] text-black text-[10px] font-extrabold uppercase tracking-wider shadow-xs">
-                  NEW
-                </span>
-                <span className="font-medium group-hover:underline">
-                  {isEn
-                    ? "TCAS 2026 Admissions & Scholarship Rounds Now Open"
-                    : "เปิดรับสมัครนิสิตใหม่ TCAS ประจำปีการศึกษา 2569"}
-                </span>
-                <span className="text-[10px] text-muted-foreground group-hover:translate-x-0.5 transition-transform">
-                  ▸
-                </span>
-              </Link>
-
-              {/* Bold Titan-Style Headline */}
-              <h1 className="text-4xl sm:text-6xl xl:text-[4.25rem] font-bold text-[#16251e] dark:text-foreground tracking-tight leading-[1.06] mb-8">
-                {isEn ? (
-                  <>
-                    Knowledge managed<br />
-                    from the palm<br />
-                    of your hand
-                  </>
-                ) : (
-                  <>
-                    การเรียนรู้และการบริหาร<br />
-                    ครบวงจรในระดับสากล<br />
-                    เพียงปลายนิ้วคุณ
-                  </>
-                )}
-              </h1>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                <Link
-                  href="/admissions"
-                  className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-[#16251e] text-white hover:bg-[#16251e]/90 dark:bg-foreground dark:text-background dark:hover:bg-foreground/90 transition-all font-semibold text-xs tracking-wider uppercase shadow-sm active:scale-95"
-                >
-                  <span>{isEn ? "JOIN FACULTY →" : "สมัครเข้าศึกษา (TCAS) →"}</span>
-                </Link>
-
-                <Link
-                  href="/programs"
-                  className="inline-flex items-center gap-2 px-4 py-3.5 rounded-full text-[#16251e] dark:text-foreground hover:text-primary transition-colors font-semibold text-xs tracking-wider uppercase group"
-                >
-                  <span>{isEn ? "SEE WHY" : "แนะนำคณะ"}</span>
-                  <span className="w-5 h-5 rounded-full border border-[#16251e]/40 dark:border-foreground/40 flex items-center justify-center text-[9px] group-hover:border-primary group-hover:text-primary transition-colors">
-                    ▶
-                  </span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Bottom Subtext & Down Pill */}
-            <div className="border-t border-[#ded9cb] dark:border-border/80 pt-6 mt-12 sm:mt-16 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-              <p className="text-xs sm:text-sm text-[#55635c] dark:text-muted-foreground font-light max-w-sm leading-relaxed">
-                {isEn
-                  ? "The modern faculty & digital sanctuary, built for the age of acceleration and academic excellence."
-                  : "สถาบันการศึกษาและนวัตกรรมการบริหารจัดการ ผสานสุนทรียภาพแห่งความสงบสู่ยุคดิจิทัล"}
-              </p>
-              <a
-                href="#portal-services"
-                aria-label={isEn ? "Scroll down to services" : "เลื่อนลงไปยังส่วนบริการ"}
-                className="inline-flex items-center justify-center w-8 h-5 rounded-full bg-[#ded9cb]/60 dark:bg-muted hover:bg-[#ded9cb] text-[#55635c] dark:text-muted-foreground hover:text-[#16251e] text-[10px] transition-colors self-start sm:self-auto shrink-0"
-              >
-                ↓
-              </a>
-            </div>
-          </div>
-
-          {/* Right Column: Architectural Illustration & Key Metrics */}
-          <div className="p-8 sm:p-12 lg:p-14 xl:p-16 flex flex-col justify-between min-h-[580px] lg:min-h-[660px] bg-[#faf9f5]/50 dark:bg-card/40">
-            {/* Top Illustration Area */}
-            <div className="flex-1 flex items-center justify-center py-4 sm:py-6">
-              <div className="relative w-full max-w-[520px] aspect-[4/3] rounded-2xl overflow-hidden shadow-xs border border-[#ded9cb]/50 bg-white dark:bg-card">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/campus-hero-etching.jpg"
-                  alt={isEn ? "University Campus Architectural Engraving" : "ภาพลายเส้นแกะสลักสถาปัตยกรรมคณะ"}
-                  className="w-full h-full object-cover mix-blend-multiply dark:mix-blend-normal transition-transform duration-700 hover:scale-[1.02]"
-                />
-              </div>
-            </div>
-
-            {/* Bottom Metrics Row */}
-            <div className="border-t border-[#ded9cb] dark:border-border/80 pt-6 mt-6 sm:mt-8">
-              <div className="grid grid-cols-3 gap-3 sm:gap-6">
-                <div>
-                  <span className="block text-[11px] sm:text-xs text-[#55635c] dark:text-muted-foreground font-normal mb-1 truncate">
-                    {isEn ? "Assets / Scale" : "พื้นที่การเรียนรู้"}
-                  </span>
-                  <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-[#16251e] dark:text-foreground tracking-tight">
-                    45,000 <span className="text-xs sm:text-sm font-normal text-[#55635c] dark:text-muted-foreground">m²</span>
-                  </div>
-                </div>
-
-                <div>
-                  <span className="block text-[11px] sm:text-xs text-[#55635c] dark:text-muted-foreground font-normal mb-1 truncate">
-                    {isEn ? "Employment" : "อัตราได้งานทำ"}
-                  </span>
-                  <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-[#16251e] dark:text-foreground tracking-tight">
-                    98.5%
-                  </div>
-                </div>
-
-                <div>
-                  <span className="block text-[11px] sm:text-xs text-[#55635c] dark:text-muted-foreground font-normal mb-1 truncate">
-                    {isEn ? "Awards / Accr." : "รางวัล & มาตรฐาน"}
-                  </span>
-                  <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-[#16251e] dark:text-foreground tracking-tight">
-                    12+
-                  </div>
-                </div>
-              </div>
-
-              {/* Disclosures / Footnote */}
-              <div className="mt-4 pt-3 flex items-center gap-1.5 text-[10px] text-[#55635c] dark:text-muted-foreground">
-                <span>ⓘ</span>
-                <span className="truncate">
-                  {isEn
-                    ? "See Disclosures, regulatory policies and accredited criteria"
-                    : "ข้อมูลสถิติและเกณฑ์การรับรองมาตรฐานการศึกษาตามกรอบกระทรวง อว."}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <SummitHero programsCount={featuredPrograms.length || 12} />
 
       {/* ══════════════════════════════════════════════════════════════════
           2. Essential Digital Services (Spatial & Service Pillars)
