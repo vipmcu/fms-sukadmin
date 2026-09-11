@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import {
   Menu,
   X,
@@ -17,14 +18,18 @@ import {
   Search,
   LogIn,
   LayoutDashboard,
+  User,
+  LogOut,
   ArrowUpRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocale } from "@/shared/lib/i18n/client";
 import { cn } from "@/shared/lib/utils";
+import type { PortalUser } from "./portal-user-menu";
 
 interface PortalNavClientProps {
-  isLoggedIn: boolean;
+  user?: PortalUser | null;
+  rightActions?: React.ReactNode;
 }
 
 interface NavItem {
@@ -45,7 +50,7 @@ const navLinks: NavItem[] = [
   { href: "/helpdesk", labelTh: "แจ้งซ่อม", labelEn: "Helpdesk", icon: Wrench },
 ];
 
-export function PortalNavClient({ isLoggedIn }: PortalNavClientProps) {
+export function PortalNavClient({ user, rightActions }: PortalNavClientProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const locale = useLocale();
@@ -80,17 +85,22 @@ export function PortalNavClient({ isLoggedIn }: PortalNavClientProps) {
         })}
       </nav>
 
-      {/* Mobile Hamburger Button */}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden text-muted-foreground hover:text-foreground"
-        aria-label={mobileOpen ? (isEn ? "Close menu" : "ปิดเมนู") : (isEn ? "Open menu" : "เปิดเมนู")}
-      >
-        {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-      </Button>
+      {/* Right Side: Action Tools + Mobile Toggle */}
+      <div className="flex items-center gap-2 shrink-0">
+        {rightActions}
+
+        {/* Mobile Hamburger Button */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="lg:hidden text-muted-foreground hover:text-foreground"
+          aria-label={mobileOpen ? (isEn ? "Close menu" : "ปิดเมนู") : (isEn ? "Open menu" : "เปิดเมนู")}
+        >
+          {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+        </Button>
+      </div>
 
       {/* Mobile Slide-Down Drawer */}
       {mobileOpen && (
@@ -165,15 +175,57 @@ export function PortalNavClient({ isLoggedIn }: PortalNavClientProps) {
               </div>
             </div>
 
-            {/* User Login Action in Drawer */}
+            {/* User Account / Login in Drawer */}
             <div className="pt-2">
-              {isLoggedIn ? (
-                <Button asChild size="sm" className="w-full justify-center gap-2 rounded-lg">
-                  <Link href="/dashboard" onClick={() => setMobileOpen(false)}>
-                    <LayoutDashboard className="size-4" />
-                    <span>Admin Console</span>
-                  </Link>
-                </Button>
+              {user ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 p-2.5 rounded-xl bg-accent/50 border border-border">
+                    <div className="w-9 h-9 rounded-full bg-primary text-primary-foreground font-bold text-xs flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+                      {user.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={user.image} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        (user.name ?? user.email ?? "?").trim().charAt(0).toUpperCase()
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs font-semibold text-foreground truncate">
+                        {user.name || (isEn ? "Staff Member" : "บุคลากร")}
+                      </div>
+                      {user.email && (
+                        <div className="text-[11px] text-muted-foreground truncate">
+                          {user.email}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button asChild size="sm" variant="outline" className="justify-center gap-1.5 rounded-lg text-xs">
+                      <Link href="/dashboard" onClick={() => setMobileOpen(false)}>
+                        <LayoutDashboard className="size-3.5 text-muted-foreground" />
+                        <span>Staff Console</span>
+                      </Link>
+                    </Button>
+                    <Button asChild size="sm" variant="outline" className="justify-center gap-1.5 rounded-lg text-xs">
+                      <Link href="/me" onClick={() => setMobileOpen(false)}>
+                        <User className="size-3.5 text-muted-foreground" />
+                        <span>{isEn ? "Profile" : "โปรไฟล์"}</span>
+                      </Link>
+                    </Button>
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => signOut({ callbackUrl: "/" })}
+                    className="w-full justify-center gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive text-xs"
+                  >
+                    <LogOut className="size-3.5" />
+                    <span>{isEn ? "Sign out" : "ออกจากระบบ"}</span>
+                  </Button>
+                </div>
               ) : (
                 <Button asChild size="sm" className="w-full justify-center gap-2 rounded-lg">
                   <Link href="/login?callbackUrl=/reservations/calendar" onClick={() => setMobileOpen(false)}>

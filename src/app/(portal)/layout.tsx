@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { LogIn, LayoutDashboard, Sparkles, ArrowUpRight } from "lucide-react";
+import { LogIn, Sparkles, ArrowUpRight } from "lucide-react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { Button } from "@/components/ui/button";
 import { auth, resolveTenantBranding } from "@/features/identity/server";
 import { getLocale } from "@/i18n/server";
 import { PortalNavClient } from "./_components/portal-nav-client";
+import { PortalUserMenu } from "./_components/portal-user-menu";
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const [session, branding, locale] = await Promise.all([
@@ -21,6 +22,14 @@ export default async function PortalLayout({ children }: { children: React.React
   const brandTagline = locale === "en"
     ? (branding.nameTh && branding.nameTh !== branding.nameEn ? branding.nameTh : "Faculty & Campus Sanctuary")
     : (branding.nameEn && branding.nameEn !== branding.nameTh ? branding.nameEn : "Faculty & Campus Sanctuary");
+
+  const user = session?.user
+    ? {
+        name: session.user.name,
+        email: session.user.email,
+        image: session.user.image,
+      }
+    : null;
 
   return (
     <div
@@ -53,34 +62,31 @@ export default async function PortalLayout({ children }: { children: React.React
             </div>
           </Link>
 
-          {/* Centered Desktop & Mobile Navigation */}
-          <PortalNavClient isLoggedIn={!!session?.user} />
+          {/* Centered Desktop & Mobile Navigation with Right Actions */}
+          <PortalNavClient
+            user={user}
+            rightActions={
+              <>
+                <LanguageSwitcher />
 
-          {/* Right Action Buttons */}
-          <div className="flex items-center gap-2 shrink-0">
-            <LanguageSwitcher />
-
-            {session?.user ? (
-              <Button asChild size="sm" className="gap-2 shrink-0 rounded-md">
-                <Link href="/dashboard">
-                  <LayoutDashboard className="size-4" />
-                  <span className="hidden sm:inline">Admin Console</span>
-                </Link>
-              </Button>
-            ) : (
-              <Button asChild size="sm" className="gap-2 shrink-0 rounded-md">
-                <Link href="/login?callbackUrl=/reservations/calendar">
-                  <LogIn className="size-4" />
-                  <span>{isEn ? "Sign In" : "เข้าสู่ระบบ"}</span>
-                </Link>
-              </Button>
-            )}
-          </div>
+                {user ? (
+                  <PortalUserMenu user={user} />
+                ) : (
+                  <Button asChild size="sm" className="gap-2 shrink-0 rounded-md">
+                    <Link href="/login?callbackUrl=/reservations/calendar">
+                      <LogIn className="size-4" />
+                      <span>{isEn ? "Sign In" : "เข้าสู่ระบบ"}</span>
+                    </Link>
+                  </Button>
+                )}
+              </>
+            }
+          />
         </div>
       </header>
 
       {/* 2. Main Content Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
 
