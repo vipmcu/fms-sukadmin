@@ -45,10 +45,18 @@ export function AdminLayoutClient({ branding, children }: AdminLayoutClientProps
     ...(hasPermission(ctx, P.settingsManage) ? [{ href: "/settings", label: t("nav.settings"), icon: <Settings className="h-4 w-4" /> }] : []),
   ];
 
+  const brandName = locale === "en"
+    ? (branding.nameEn || branding.nameTh || t("app.name"))
+    : (branding.nameTh || branding.nameEn || t("app.name"));
+
+  const brandTagline = locale === "en"
+    ? (branding.nameTh && branding.nameTh !== branding.nameEn ? branding.nameTh : t("app.tagline"))
+    : (branding.nameEn && branding.nameEn !== branding.nameTh ? branding.nameEn : t("app.tagline"));
+
   return (
     <AdminShell
-      brandName={t("app.name")}
-      brandTagline={t("app.tagline")}
+      brandName={brandName}
+      brandTagline={brandTagline}
       brandHref="/dashboard"
       brandLogo={branding.logoUrl}
       breadcrumb={breadcrumb}

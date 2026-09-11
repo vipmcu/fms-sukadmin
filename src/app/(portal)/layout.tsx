@@ -2,11 +2,14 @@ import Link from "next/link";
 import { LogIn, LayoutDashboard, Sparkles, ArrowUpRight } from "lucide-react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { Button } from "@/components/ui/button";
-import { auth } from "@/features/identity/server";
+import { auth, resolveTenantBranding } from "@/features/identity/server";
 import { PortalNavClient } from "./_components/portal-nav-client";
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth().catch(() => null);
+  const [session, branding] = await Promise.all([
+    auth().catch(() => null),
+    resolveTenantBranding(),
+  ]);
 
   return (
     <div
@@ -18,15 +21,20 @@ export default async function PortalLayout({ children }: { children: React.React
         <div className="glass-nav-elevate rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-xs border border-[#ded9cb]/80">
           {/* Brand Logo & Monogram */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-full bg-[#1e3328] text-[#c5a059] flex items-center justify-center font-serif-luxury text-sm font-bold shadow-xs group-hover:scale-105 transition-transform">
-              E
+            <div className="w-9 h-9 rounded-full bg-[#1e3328] text-[#c5a059] flex items-center justify-center font-serif-luxury text-sm font-bold shadow-xs group-hover:scale-105 transition-transform overflow-hidden">
+              {branding.logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={branding.logoUrl} alt="Logo" className="w-full h-full object-contain" />
+              ) : (
+                branding.nameEn?.[0] || "E"
+              )}
             </div>
             <div>
               <span className="font-serif-luxury font-bold text-sm sm:text-base tracking-tight block text-[#16251e] leading-tight group-hover:text-[#1e3328] transition-colors">
-                ELEVATE • FMS
+                {branding.nameEn || "ELEVATE • FMS"}
               </span>
               <span className="text-[10px] tracking-[0.2em] uppercase font-semibold text-[#55635c] block">
-                Faculty & Campus Sanctuary
+                {branding.nameTh || "Faculty & Campus Sanctuary"}
               </span>
             </div>
           </Link>
@@ -69,15 +77,20 @@ export default async function PortalLayout({ children }: { children: React.React
             {/* Col 1: Brand & Philosophy */}
             <div className="md:col-span-5 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white/10 text-[#c5a059] flex items-center justify-center font-serif-luxury text-lg font-bold border border-white/10">
-                  E
+                <div className="w-10 h-10 rounded-full bg-white/10 text-[#c5a059] flex items-center justify-center font-serif-luxury text-lg font-bold border border-white/10 overflow-hidden">
+                  {branding.logoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={branding.logoUrl} alt="Logo" className="w-full h-full object-contain" />
+                  ) : (
+                    branding.nameEn?.[0] || "E"
+                  )}
                 </div>
                 <div>
                   <span className="font-serif-luxury font-bold text-lg tracking-tight text-white block">
-                    ELEVATE LIVING & LEARNING
+                    {branding.nameEn || "ELEVATE LIVING & LEARNING"}
                   </span>
                   <span className="text-[10px] tracking-[0.22em] uppercase font-semibold text-[#a0b0a7] block">
-                    Faculty of Management Sciences
+                    {branding.nameTh || "Faculty of Management Sciences"}
                   </span>
                 </div>
               </div>
