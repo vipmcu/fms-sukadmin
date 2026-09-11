@@ -3,13 +3,16 @@ import { LogIn, LayoutDashboard, Sparkles, ArrowUpRight } from "lucide-react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { Button } from "@/components/ui/button";
 import { auth, resolveTenantBranding } from "@/features/identity/server";
+import { getLocale } from "@/i18n/server";
 import { PortalNavClient } from "./_components/portal-nav-client";
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
-  const [session, branding] = await Promise.all([
+  const [session, branding, locale] = await Promise.all([
     auth().catch(() => null),
     resolveTenantBranding(),
+    getLocale(),
   ]);
+  const isEn = locale === "en";
 
   return (
     <div
@@ -18,10 +21,10 @@ export default async function PortalLayout({ children }: { children: React.React
     >
       {/* 1. Floating Elevate Pill Header */}
       <header className="sticky top-3 z-50 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full" suppressHydrationWarning>
-        <div className="glass-nav-elevate rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-xs border border-[#ded9cb]/80">
+        <div className="glass-nav-elevate rounded-full px-4 sm:px-6 py-2 flex items-center justify-between shadow-xs border border-[#ded9cb]/80 gap-2 sm:gap-4">
           {/* Brand Logo & Monogram */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-full bg-[#1e3328] text-[#c5a059] flex items-center justify-center font-serif-luxury text-sm font-bold shadow-xs group-hover:scale-105 transition-transform overflow-hidden">
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0 min-w-0 max-w-[200px] sm:max-w-[240px] xl:max-w-[280px]">
+            <div className="w-9 h-9 rounded-full bg-[#1e3328] text-[#c5a059] flex items-center justify-center font-serif-luxury text-sm font-bold shadow-xs group-hover:scale-105 transition-transform overflow-hidden shrink-0">
               {branding.logoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={branding.logoUrl} alt="Logo" className="w-full h-full object-contain" />
@@ -29,11 +32,11 @@ export default async function PortalLayout({ children }: { children: React.React
                 branding.nameEn?.[0] || "E"
               )}
             </div>
-            <div>
-              <span className="font-serif-luxury font-bold text-sm sm:text-base tracking-tight block text-[#16251e] leading-tight group-hover:text-[#1e3328] transition-colors">
+            <div className="min-w-0">
+              <span className="font-serif-luxury font-bold text-xs sm:text-sm tracking-tight block text-[#16251e] leading-tight group-hover:text-[#1e3328] transition-colors truncate">
                 {branding.nameEn || "ELEVATE • FMS"}
               </span>
-              <span className="text-[10px] tracking-[0.2em] uppercase font-semibold text-[#55635c] block">
+              <span className="text-[9px] sm:text-[10px] tracking-wider uppercase font-semibold text-[#55635c] block truncate">
                 {branding.nameTh || "Faculty & Campus Sanctuary"}
               </span>
             </div>
@@ -43,21 +46,21 @@ export default async function PortalLayout({ children }: { children: React.React
           <PortalNavClient isLoggedIn={!!session?.user} />
 
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <LanguageSwitcher />
 
             {session?.user ? (
-              <Button asChild size="sm" className="gap-2 rounded-full bg-[#1e3328] hover:bg-[#13221b] text-white text-xs font-semibold uppercase tracking-wider px-4">
+              <Button asChild size="sm" className="gap-1.5 sm:gap-2 rounded-full bg-[#1e3328] hover:bg-[#13221b] text-white text-[11px] sm:text-xs font-semibold uppercase tracking-wider px-3 sm:px-4">
                 <Link href="/dashboard">
                   <LayoutDashboard className="size-3.5 text-[#c5a059]" />
                   <span className="hidden sm:inline">Admin Console</span>
                 </Link>
               </Button>
             ) : (
-              <Button asChild size="sm" className="gap-2 rounded-full bg-[#1e3328] hover:bg-[#13221b] text-white text-xs font-semibold uppercase tracking-wider px-5">
+              <Button asChild size="sm" className="gap-1.5 sm:gap-2 rounded-full bg-[#1e3328] hover:bg-[#13221b] text-white text-[11px] sm:text-xs font-semibold uppercase tracking-wider px-3 sm:px-4">
                 <Link href="/login?callbackUrl=/reservations/calendar">
                   <LogIn className="size-3.5 text-[#c5a059]" />
-                  <span>เข้าสู่ระบบ</span>
+                  <span>{isEn ? "Sign In" : "เข้าสู่ระบบ"}</span>
                 </Link>
               </Button>
             )}
