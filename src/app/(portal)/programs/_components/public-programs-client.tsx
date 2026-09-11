@@ -26,13 +26,13 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
   const getLevelBadge = (lvl: string) => {
     switch (lvl) {
       case "BACHELOR":
-        return { label: "ปริญญาตรี", color: "bg-[#c5a059]/15 text-[#1e3328] border border-[#c5a059]/30" };
+        return { label: "ปริญญาตรี", color: "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60" };
       case "MASTER":
-        return { label: "ปริญญาโท", color: "bg-[#1e3328]/10 text-[#1e3328] border border-[#1e3328]/20" };
+        return { label: "ปริญญาโท", color: "bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60" };
       case "DOCTORAL":
-        return { label: "ปริญญาเอก", color: "bg-[#121c17] text-[#dfbe80] border border-[#dfbe80]/30" };
+        return { label: "ปริญญาเอก", color: "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60" };
       default:
-        return { label: "ประกาศนียบัตร", color: "bg-[#ded9cb] text-[#16251e]" };
+        return { label: "ประกาศนียบัตร", color: "bg-muted text-muted-foreground border border-border" };
     }
   };
 
@@ -53,42 +53,42 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
     <div className="space-y-12 pb-12">
       {/* 1. Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4 pt-4 pb-2">
-        <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-[#f7f5ef] border border-[#c5a059]/40 text-[#16251e] text-[11px] font-semibold tracking-[0.2em] uppercase">
-          <Sparkles className="size-3 text-[#c5a059]" />
+        <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/60 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold tracking-[0.2em] uppercase">
+          <Sparkles className="size-3 text-amber-500" />
           <span>Curated Academic Pathways</span>
         </div>
-        <h1 className="font-serif-luxury text-3xl sm:text-5xl font-normal tracking-tight text-[#16251e]">
+        <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-foreground">
           หลักสูตรการศึกษาและวิชาการ
         </h1>
-        <p className="text-[#55635c] text-xs sm:text-base font-light leading-relaxed">
+        <p className="text-muted-foreground text-xs sm:text-base font-light leading-relaxed">
           หลักสูตรทันสมัยที่ตอบสนองตลาดแรงงานสากล
           บูรณาการภาคทฤษฎีและปฏิบัติการพร้อมคณาจารย์ผู้เชี่ยวชาญ
         </p>
       </div>
 
       {/* 2. Filters & Search */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between glass-card-elevate p-4 rounded-3xl border border-[#ded9cb] shadow-xs">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between lingua-card p-4 rounded-3xl border border-border/80 bg-card shadow-xs">
         <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-[#55635c]" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="ค้นหาชื่อหลักสูตร, สาขาวิชา, ปริญญา..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             aria-label="ค้นหาชื่อหลักสูตร, สาขาวิชา, ปริญญา"
-            className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm border border-[#ded9cb] rounded-2xl bg-[#f7f5ef] text-[#16251e] placeholder:text-[#55635c]/60 focus:outline-none focus:ring-2 focus:ring-[#1e3328]/30"
+            className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm border border-border/80 rounded-2xl bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
           />
         </div>
 
-        <div role="group" aria-label="กรองระดับการศึกษา (Filter by Education Level)" className="flex items-center gap-1.5 p-1 bg-[#ede7dc]/80 rounded-2xl w-full sm:w-auto overflow-x-auto">
+        <div role="group" aria-label="กรองระดับการศึกษา (Filter by Education Level)" className="flex items-center gap-1.5 p-1 bg-muted/60 rounded-xl w-full sm:w-auto overflow-x-auto">
           <button
             type="button"
             onClick={() => setSelectedLevel("ALL")}
             aria-pressed={selectedLevel === "ALL"}
-            className={`px-4 py-2 text-xs font-medium rounded-xl transition-all ${
+            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
               selectedLevel === "ALL"
-                ? "bg-[#1e3328] text-white shadow-xs"
-                : "text-[#55635c] hover:text-[#16251e]"
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             ทั้งหมด ({programs.length})
@@ -97,10 +97,10 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
             type="button"
             onClick={() => setSelectedLevel("BACHELOR")}
             aria-pressed={selectedLevel === "BACHELOR"}
-            className={`px-4 py-2 text-xs font-medium rounded-xl transition-all ${
+            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
               selectedLevel === "BACHELOR"
-                ? "bg-[#1e3328] text-white shadow-xs"
-                : "text-[#55635c] hover:text-[#16251e]"
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             ปริญญาตรี
@@ -109,10 +109,10 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
             type="button"
             onClick={() => setSelectedLevel("MASTER")}
             aria-pressed={selectedLevel === "MASTER"}
-            className={`px-4 py-2 text-xs font-medium rounded-xl transition-all ${
+            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
               selectedLevel === "MASTER"
-                ? "bg-[#1e3328] text-white shadow-xs"
-                : "text-[#55635c] hover:text-[#16251e]"
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             ปริญญาโท
@@ -121,10 +121,10 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
             type="button"
             onClick={() => setSelectedLevel("DOCTORAL")}
             aria-pressed={selectedLevel === "DOCTORAL"}
-            className={`px-4 py-2 text-xs font-medium rounded-xl transition-all ${
+            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
               selectedLevel === "DOCTORAL"
-                ? "bg-[#1e3328] text-white shadow-xs"
-                : "text-[#55635c] hover:text-[#16251e]"
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             ปริญญาเอก
@@ -134,10 +134,10 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
 
       {/* 3. Program Grid */}
       {filtered.length === 0 ? (
-        <div className="p-16 text-center rounded-3xl border border-dashed border-[#ded9cb] glass-card-elevate">
-          <GraduationCap className="size-10 mx-auto text-[#c5a059]/60 mb-3" />
-          <h3 className="font-serif-luxury text-lg text-[#16251e]">ไม่พบหลักสูตรที่ตรงกับเงื่อนไข</h3>
-          <p className="text-xs text-[#55635c] mt-1 font-light">
+        <div className="p-16 text-center rounded-2xl border border-dashed border-border bg-card">
+          <GraduationCap className="size-10 mx-auto text-amber-500/60 mb-3" />
+          <h3 className="text-lg font-bold text-foreground">ไม่พบหลักสูตรที่ตรงกับเงื่อนไข</h3>
+          <p className="text-xs text-muted-foreground mt-1 font-normal">
             ลองปรับเปลี่ยนคำค้นหา หรือเลือกระดับการศึกษาอื่น
           </p>
         </div>
@@ -149,12 +149,12 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
             return (
               <div
                 key={p.id}
-                className="flex flex-col justify-between p-7 sm:p-8 glass-card-elevate rounded-3xl border border-[#ded9cb] shadow-xs hover:shadow-xl hover:border-[#c5a059]/60 transition-all group space-y-6"
+                className="flex flex-col justify-between p-7 sm:p-8 bg-card rounded-2xl border border-border/80 shadow-xs hover:shadow-lg hover:border-indigo-500/50 transition-all group space-y-6"
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-[10px] font-bold px-2 py-0.5 bg-[#ede7dc] rounded text-[#55635c]">
+                      <span className="font-mono text-[10px] font-bold px-2 py-0.5 bg-muted rounded text-muted-foreground">
                         {p.code}
                       </span>
                       <span className={`text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full uppercase ${badge.color}`}>
@@ -168,39 +168,39 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
                         เปิดรับสมัคร
                       </span>
                     ) : (
-                      <span className="text-[10px] text-[#55635c] bg-[#ded9cb]/50 px-2.5 py-0.5 rounded-full">
+                      <span className="text-[10px] text-muted-foreground bg-muted/60 px-2.5 py-0.5 rounded-full">
                         ปิดรับสมัคร
                       </span>
                     )}
                   </div>
 
                   <div>
-                    <h2 className="font-serif-luxury text-2xl text-[#16251e] group-hover:text-[#1e3328] transition-colors leading-snug">
+                    <h2 className="text-2xl font-bold text-foreground group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug">
                       {p.nameTh}
                     </h2>
-                    <p className="text-xs text-[#55635c] mt-0.5 font-light">{p.nameEn}</p>
-                    <div className="mt-2 text-xs font-serif-luxury text-[#1e3328]">
-                      ชื่อปริญญา: <span className="font-sans font-normal text-[#55635c]">{p.degreeTh}</span>
+                    <p className="text-xs text-muted-foreground mt-0.5 font-normal">{p.nameEn}</p>
+                    <div className="mt-2 text-xs font-semibold text-foreground">
+                      ชื่อปริญญา: <span className="font-normal text-muted-foreground">{p.degreeTh}</span>
                     </div>
                   </div>
 
                   {p.descriptionTh && (
-                    <p className="text-xs text-[#55635c] line-clamp-3 leading-relaxed font-light">
+                    <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed font-normal">
                       {p.descriptionTh}
                     </p>
                   )}
 
-                  <div className="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-[#ede7dc]/60 border border-[#ded9cb]/60 text-xs text-[#55635c]">
-                    <div className="flex items-center gap-1.5 font-light">
-                      <BookOpen className="size-3 text-[#c5a059]" />
+                  <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-muted/40 border border-border/60 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1.5 font-normal">
+                      <BookOpen className="size-3 text-amber-500" />
                       <span>{p.totalCredits} หน่วยกิต</span>
                     </div>
-                    <div className="flex items-center gap-1.5 font-light">
-                      <Clock className="size-3 text-[#c5a059]" />
+                    <div className="flex items-center gap-1.5 font-normal">
+                      <Clock className="size-3 text-amber-500" />
                       <span>{p.durationYears} ปี</span>
                     </div>
-                    <div className="flex items-center gap-1.5 truncate font-light">
-                      <Coins className="size-3 text-[#c5a059] shrink-0" />
+                    <div className="flex items-center gap-1.5 truncate font-normal">
+                      <Coins className="size-3 text-amber-500 shrink-0" />
                       <span className="truncate">
                         {p.tuitionFeePerTerm
                           ? `฿${p.tuitionFeePerTerm.toLocaleString()}/เทอม`
@@ -211,20 +211,20 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
 
                   {p.careerOpportunities.length > 0 && (
                     <div className="space-y-1.5 pt-1">
-                      <span className="text-[10px] font-semibold text-[#55635c] uppercase tracking-wider block">
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider block">
                         แนวทางการประกอบอาชีพ
                       </span>
                       <div className="flex flex-wrap gap-1.5">
                         {p.careerOpportunities.slice(0, 3).map((job, idx) => (
                           <span
                             key={idx}
-                            className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#f7f5ef] border border-[#ded9cb] text-[#16251e] font-light"
+                            className="text-[11px] px-2.5 py-0.5 rounded-full bg-muted/60 border border-border/60 text-foreground font-normal"
                           >
                             {job}
                           </span>
                         ))}
                         {p.careerOpportunities.length > 3 && (
-                          <span className="text-[11px] px-2 py-0.5 text-[#55635c] font-light">
+                          <span className="text-[11px] px-2 py-0.5 text-muted-foreground font-normal">
                             +{p.careerOpportunities.length - 3}
                           </span>
                         )}
@@ -233,10 +233,10 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-[#ded9cb]/60 flex items-center justify-between gap-3">
+                <div className="pt-4 border-t border-border/60 flex items-center justify-between gap-3">
                   <Link
                     href={`/programs/${p.id}`}
-                    className="text-xs font-medium text-[#1e3328] hover:text-[#c5a059] flex items-center gap-1 group-hover:translate-x-0.5 transition-transform"
+                    className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform"
                   >
                     <span>ดูแผนการเรียนและรายวิชา</span>
                     <ArrowRight className="size-3.5" />
@@ -247,10 +247,10 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
                       href={p.applicationLink}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#1e3328] hover:bg-[#13221b] text-white text-xs font-medium transition-all shadow-xs"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition-all shadow-xs active:scale-95"
                     >
                       <span>สมัครเรียน</span>
-                      <ArrowUpRight className="size-3 text-[#c5a059]" />
+                      <ArrowUpRight className="size-3 text-slate-950" />
                     </a>
                   )}
                 </div>

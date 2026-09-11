@@ -29,14 +29,14 @@ export function FacilitiesCatalogClient({ resources }: FacilitiesCatalogClientPr
     <div className="space-y-12 pb-12">
       {/* 1. Header Section */}
       <div className="text-center max-w-3xl mx-auto space-y-4 pt-4 pb-2">
-        <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-[#f7f5ef] border border-[#c5a059]/40 text-[#16251e] text-[11px] font-semibold tracking-[0.2em] uppercase">
-          <Sparkles className="size-3 text-[#c5a059]" />
-          <span>Spatial Sanctuary & Mobility</span>
+        <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/60 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold tracking-[0.2em] uppercase">
+          <Sparkles className="size-3 text-amber-500" />
+          <span>Campus Facilities & Mobility</span>
         </div>
-        <h1 className="font-serif-luxury text-3xl sm:text-5xl font-normal tracking-tight text-[#16251e]">
+        <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-foreground">
           ห้องประชุมและยานพาหนะส่วนกลาง
         </h1>
-        <p className="text-[#55635c] text-xs sm:text-base font-light leading-relaxed">
+        <p className="text-muted-foreground text-xs sm:text-base font-light leading-relaxed">
           ให้บริการตรวจสอบข้อมูลสิ่งอำนวยความสะดวก ความพร้อมใช้งาน และปฏิทินตารางงาน
           สำหรับคณาจารย์ บุคลากร และนิสิต
         </p>
@@ -44,33 +44,33 @@ export function FacilitiesCatalogClient({ resources }: FacilitiesCatalogClientPr
         <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/login?callbackUrl=/reservations/calendar"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1e3328] hover:bg-[#13221b] text-white text-xs font-medium tracking-wide shadow-md transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium tracking-wide shadow-md shadow-indigo-600/10 transition-all"
           >
             <span>เข้าสู่ระบบเพื่อทำการจอง</span>
-            <ArrowUpRight className="size-3.5 text-[#c5a059]" />
+            <ArrowUpRight className="size-3.5 text-amber-300" />
           </Link>
           <Link
             href="/facilities/schedule"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-[#c5a059] hover:bg-[#c5a059]/10 text-[#16251e] text-xs font-medium transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-border/80 hover:border-indigo-500/40 bg-card hover:bg-muted/60 text-foreground text-xs font-medium transition-all"
           >
-            <Calendar className="size-3.5 text-[#1e3328]" />
+            <Calendar className="size-3.5 text-indigo-600 dark:text-indigo-400" />
             <span>ดูตารางการใช้งานประจำวัน</span>
           </Link>
         </div>
       </div>
 
       {/* 2. Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 glass-card-elevate border border-[#ded9cb] rounded-3xl shadow-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-card border border-border/80 rounded-2xl shadow-xs">
         {/* Type Switcher */}
-        <div role="group" aria-label="กรองประเภทสถานที่และยานพาหนะ (Filter facilities and vehicles)" className="flex items-center gap-1.5 p-1 bg-[#ede7dc]/80 rounded-2xl w-full sm:w-auto">
+        <div role="group" aria-label="กรองประเภทสถานที่และยานพาหนะ (Filter facilities and vehicles)" className="flex items-center gap-1.5 p-1 bg-muted/60 rounded-xl w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setFilterType("ALL")}
             aria-pressed={filterType === "ALL"}
-            className={`flex-1 sm:flex-none px-4 py-2 text-xs font-medium rounded-xl transition-all ${
+            className={`flex-1 sm:flex-none px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
               filterType === "ALL"
-                ? "bg-[#1e3328] text-white shadow-xs"
-                : "text-[#55635c] hover:text-[#16251e]"
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             ทั้งหมด ({resources.length})
@@ -79,10 +79,10 @@ export function FacilitiesCatalogClient({ resources }: FacilitiesCatalogClientPr
             type="button"
             onClick={() => setFilterType("ROOM")}
             aria-pressed={filterType === "ROOM"}
-            className={`flex-1 sm:flex-none px-4 py-2 text-xs font-medium rounded-xl transition-all ${
+            className={`flex-1 sm:flex-none px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
               filterType === "ROOM"
-                ? "bg-[#1e3328] text-white shadow-xs"
-                : "text-[#55635c] hover:text-[#16251e]"
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             ห้องประชุม ({resources.filter((r) => r.type === "ROOM").length})
@@ -91,10 +91,10 @@ export function FacilitiesCatalogClient({ resources }: FacilitiesCatalogClientPr
             type="button"
             onClick={() => setFilterType("VEHICLE")}
             aria-pressed={filterType === "VEHICLE"}
-            className={`flex-1 sm:flex-none px-4 py-2 text-xs font-medium rounded-xl transition-all ${
+            className={`flex-1 sm:flex-none px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
               filterType === "VEHICLE"
-                ? "bg-[#1e3328] text-white shadow-xs"
-                : "text-[#55635c] hover:text-[#16251e]"
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             ยานพาหนะ ({resources.filter((r) => r.type === "VEHICLE").length})
@@ -103,22 +103,22 @@ export function FacilitiesCatalogClient({ resources }: FacilitiesCatalogClientPr
 
         {/* Search Box */}
         <div className="relative w-full sm:w-80">
-          <Search className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#55635c]" />
+          <Search className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             placeholder="ค้นหาชื่อ, รหัส, สถานที่..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             aria-label="ค้นหาห้องประชุมหรือยานพาหนะ"
-            className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm border border-[#ded9cb] rounded-2xl bg-[#f7f5ef] text-[#16251e] placeholder:text-[#55635c]/60 focus:outline-none focus:ring-2 focus:ring-[#1e3328]/30"
+            className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm border border-border/80 rounded-xl bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
           />
         </div>
       </div>
 
       {/* 3. Catalog Grid */}
       {filtered.length === 0 ? (
-        <div className="p-16 text-center border border-dashed border-[#ded9cb] rounded-3xl glass-card-elevate">
-          <p className="text-[#55635c] text-xs sm:text-sm font-light">ไม่พบข้อมูลห้องหรือยานพาหนะตามคำค้นหา</p>
+        <div className="p-16 text-center border border-dashed border-border rounded-2xl bg-card">
+          <p className="text-muted-foreground text-xs sm:text-sm font-light">ไม่พบข้อมูลห้องหรือยานพาหนะตามคำค้นหา</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -128,49 +128,49 @@ export function FacilitiesCatalogClient({ resources }: FacilitiesCatalogClientPr
             return (
               <div
                 key={r.id}
-                className="group p-7 glass-card-elevate border border-[#ded9cb] rounded-3xl shadow-xs hover:shadow-xl hover:border-[#c5a059]/60 transition-all flex flex-col justify-between space-y-6"
+                className="group p-7 bg-card border border-border/80 rounded-2xl shadow-xs hover:shadow-lg hover:border-indigo-500/50 transition-all flex flex-col justify-between space-y-6"
               >
                 <div className="space-y-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-3.5">
-                      <div className="w-12 h-12 rounded-2xl bg-[#1e3328]/10 text-[#1e3328] flex items-center justify-center shrink-0 group-hover:bg-[#1e3328] group-hover:text-white transition-all">
+                      <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-2xs">
                         {isRoom ? <DoorOpen className="size-6" /> : <Car className="size-6" />}
                       </div>
                       <div>
-                        <span className="font-mono text-[10px] font-semibold px-2 py-0.5 bg-[#ede7dc] text-[#55635c] rounded">
+                        <span className="font-mono text-[10px] font-semibold px-2 py-0.5 bg-muted text-muted-foreground rounded">
                           {r.code}
                         </span>
-                        <h3 className="font-serif-luxury text-xl text-[#16251e] group-hover:text-[#1e3328] transition-colors mt-1 leading-snug">
+                        <h3 className="text-xl font-bold text-foreground group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mt-1 leading-snug">
                           {r.nameTh}
                         </h3>
-                        <p className="text-xs text-[#55635c] font-light">{r.nameEn}</p>
+                        <p className="text-xs text-muted-foreground font-normal">{r.nameEn}</p>
                       </div>
                     </div>
                   </div>
 
                   {r.descriptionTh && (
-                    <p className="text-xs text-[#55635c] line-clamp-2 leading-relaxed font-light">
+                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed font-normal">
                       {r.descriptionTh}
                     </p>
                   )}
 
                   {/* Highlights */}
-                  <div className="grid grid-cols-2 gap-2 pt-2 text-xs text-[#55635c]">
-                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#ede7dc]/60 border border-[#ded9cb]/60 font-light">
-                      <Users className="size-3.5 text-[#c5a059] shrink-0" />
-                      <span>ความจุ: <strong className="text-[#16251e] font-medium">{r.capacity}</strong> {isRoom ? "ที่นั่ง" : "คน"}</span>
+                  <div className="grid grid-cols-2 gap-2 pt-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-muted/40 border border-border/60 font-normal">
+                      <Users className="size-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                      <span>ความจุ: <strong className="text-foreground font-semibold">{r.capacity}</strong> {isRoom ? "ที่นั่ง" : "คน"}</span>
                     </div>
-                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#ede7dc]/60 border border-[#ded9cb]/60 font-light">
-                      <MapPin className="size-3.5 text-[#c5a059] shrink-0" />
+                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-muted/40 border border-border/60 font-normal">
+                      <MapPin className="size-3.5 text-amber-500 shrink-0" />
                       <span className="truncate">{r.locationOrPlate}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#ded9cb]/60 flex items-center justify-between gap-3">
+                <div className="pt-4 border-t border-border/60 flex items-center justify-between gap-3">
                   <Link
                     href={`/facilities/${r.id}`}
-                    className="text-xs font-medium text-[#1e3328] hover:text-[#c5a059] inline-flex items-center gap-1 transition-colors"
+                    className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 inline-flex items-center gap-1 transition-colors"
                   >
                     <span>ดูรายละเอียดสเปก</span>
                     <ArrowRight className="size-3" />
@@ -178,10 +178,10 @@ export function FacilitiesCatalogClient({ resources }: FacilitiesCatalogClientPr
 
                   <Link
                     href={`/facilities/${r.id}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[#ded9cb] hover:border-[#c5a059] hover:bg-[#ede7dc] text-xs font-medium text-[#16251e] transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-border/80 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 text-xs font-semibold text-foreground transition-all"
                   >
                     <span>สำรวจพื้นที่นี้</span>
-                    <ArrowUpRight className="size-3 text-[#c5a059]" />
+                    <ArrowUpRight className="size-3 text-amber-500" />
                   </Link>
                 </div>
               </div>

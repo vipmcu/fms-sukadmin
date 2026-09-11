@@ -47,7 +47,7 @@ export default async function PortalLayout({ children }: { children: React.React
 
   return (
     <div
-      className="min-h-screen flex flex-col bg-[#ede7dc] text-[#16251e] selection:bg-[#c5a059]/30 selection:text-[#16251e]"
+      className="min-h-screen flex flex-col bg-slate-50/90 dark:bg-slate-950 text-foreground selection:bg-indigo-500/20 selection:text-indigo-900 dark:selection:text-indigo-200"
       suppressHydrationWarning
     >
       {/* Skip to Main Content for Accessibility */}

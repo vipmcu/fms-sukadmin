@@ -73,27 +73,52 @@
   body { @apply bg-background text-foreground; }
 }
 
-/* ═══════════ Elevate Living Spaces Architectural Luxury Tokens ═══════════ */
+/* ═══════════ Lingua Bridge (Language School & EdTech System Tokens) ═══════════ */
+.lingua-card {
+  background-color: var(--color-card, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lingua-card:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 12px 28px -8px rgba(79, 70, 229, 0.12);
+  transform: translateY(-2px);
+}
+
+.lingua-gradient-banner {
+  background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 50%, #1e1b4b 100%);
+  color: #f8fafc;
+}
+
+/* Backward-compatible bridges modernized to Lingua Bridge aesthetic */
 .font-serif-luxury {
-  font-family: var(--font-playfair), Georgia, serif;
+  font-family: var(--font-sans);
 }
 
 .glass-nav-elevate {
-  background: rgba(247, 245, 239, 0.88);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(222, 217, 203, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 .glass-card-elevate {
-  background: rgba(247, 245, 239, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(222, 217, 203, 0.85);
-  box-shadow: 0 20px 40px -15px rgba(22, 37, 30, 0.06);
+  background-color: var(--color-card, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  box-shadow: 0 4px 20px -4px rgba(79, 70, 229, 0.06);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-elevate:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 14px 30px -10px rgba(79, 70, 229, 0.14);
+  transform: translateY(-2px);
 }
 
 .dark-emerald-elevate {
-  background-color: #121c17;
-  color: #ede7dc;
+  background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 50%, #1e1b4b 100%);
+  color: #f8fafc;
 }
