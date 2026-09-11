@@ -1,0 +1,1 @@
+This folder contains the built output assets for the worker "sothorn-mcu" generated at 2026-09-11T08:25:43.001Z.

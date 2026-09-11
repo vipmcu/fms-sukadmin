@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sothorn-mcu",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "vars": {
+    "ORIGIN_URL": "https://enter-biographies-gentleman-humans.trycloudflare.com"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
