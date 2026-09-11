@@ -62,6 +62,20 @@ services:
     networks:
       - fms-network
 
+  # -----------------------------------------------------------
+  # 3. Cloudflare Tunnel Service: Expose web publicly via Cloudflare
+  # -----------------------------------------------------------
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: fms-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --url http://web:3010
+    networks:
+      - fms-network
+    depends_on:
+      web:
+        condition: service_healthy
+
 volumes:
   postgres_data:
     driver: local

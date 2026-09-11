@@ -25,7 +25,8 @@ export async function proxy(req: NextRequest) {
   const isManageRoute = pathname.includes("/manage");
   if (!isManageRoute && PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return NextResponse.next();
 
-  const secureCookie = (process.env.APP_URL ?? "").startsWith("https://");
+  const isHttps = req.nextUrl.protocol === "https:" || req.headers.get("x-forwarded-proto") === "https" || (process.env.APP_URL ?? "").startsWith("https://");
+  const secureCookie = isHttps;
   const token = await getToken({ req, secret: process.env.AUTH_SECRET, secureCookie });
   const loggedIn = !!token && !token.invalid && !!token.userId;
 
