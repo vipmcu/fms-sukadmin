@@ -6,8 +6,7 @@ import { zodErrorMap } from "@/shared/lib/i18n/zod-locale";
 import { P } from "../../permissions";
 import { requirePermission } from "../rbac";
 import { updateSettingsSchema } from "../validations/settings";
-import fs from "node:fs/promises";
-import path from "node:path";
+import { uploadFile } from "@/shared/lib/infra/storage";
 import { errors } from "@/shared/lib/errors";
 import { getTenantSettings, updateTenantSettings, type TenantSettings } from "../services/tenant.service";
 
@@ -42,23 +41,10 @@ export async function uploadLogoAction(formData: FormData): Promise<ActionResult
       throw errors.validation("validation", { file: ["ขนาดไฟล์ต้องไม่เกิน 2MB"] });
     }
 
-    const EXT_MAP: Record<string, string> = {
-      "image/png": "png",
-      "image/jpeg": "jpg",
-      "image/webp": "webp",
-      "image/svg+xml": "svg",
-    };
-    const ext = EXT_MAP[file.type] ?? "png";
-    const randomSuffix = Math.random().toString(36).substring(2, 8);
-    const filename = `logo-${ctx.tenantId}-${Date.now()}-${randomSuffix}.${ext}`;
-
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "logos");
-    await fs.mkdir(uploadDir, { recursive: true });
-    const targetPath = path.join(uploadDir, filename);
-
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await fs.writeFile(targetPath, buffer);
-
-    return { url: `/uploads/logos/${filename}` };
+    return await uploadFile({
+      tenantId: ctx.tenantId,
+      file,
+      folder: "logos",
+    });
   });
 }

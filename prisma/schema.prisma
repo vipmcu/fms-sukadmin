@@ -919,3 +919,17 @@ model TicketRating {
 
   @@map("ticket_ratings")
 }
+
+model UploadedFile {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String?  @map("tenant_id") @db.Uuid
+  filename  String   @db.VarChar(255)
+  mimeType  String   @map("mime_type") @db.VarChar(100)
+  size      Int
+  data      Bytes
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@index([tenantId])
+  @@map("uploaded_files")
+}
+
