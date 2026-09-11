@@ -14,30 +14,41 @@ export default async function PortalLayout({ children }: { children: React.React
   ]);
   const isEn = locale === "en";
 
+  const brandName = locale === "en"
+    ? (branding.nameEn || branding.nameTh || "ELEVATE • FMS")
+    : (branding.nameTh || branding.nameEn || "ELEVATE • FMS");
+
+  const brandTagline = locale === "en"
+    ? (branding.nameTh && branding.nameTh !== branding.nameEn ? branding.nameTh : "Faculty & Campus Sanctuary")
+    : (branding.nameEn && branding.nameEn !== branding.nameTh ? branding.nameEn : "Faculty & Campus Sanctuary");
+
   return (
     <div
       className="min-h-screen flex flex-col bg-[#ede7dc] text-[#16251e] selection:bg-[#c5a059]/30 selection:text-[#16251e]"
       suppressHydrationWarning
     >
-      {/* 1. Floating Elevate Pill Header */}
-      <header className="sticky top-3 z-50 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full" suppressHydrationWarning>
-        <div className="glass-nav-elevate rounded-full px-4 sm:px-6 py-2 flex items-center justify-between shadow-xs border border-[#ded9cb]/80 gap-2 sm:gap-4">
-          {/* Brand Logo & Monogram */}
-          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0 min-w-0 max-w-[200px] sm:max-w-[240px] xl:max-w-[280px]">
-            <div className="w-9 h-9 rounded-full bg-[#1e3328] text-[#c5a059] flex items-center justify-center font-serif-luxury text-sm font-bold shadow-xs group-hover:scale-105 transition-transform overflow-hidden shrink-0">
+      {/* Admin-styled Sticky Full-Width Header */}
+      <header
+        className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/90 backdrop-blur-md shadow-xs text-foreground transition-colors"
+        suppressHydrationWarning
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+          {/* Brand Logo & Monogram (Admin Style) */}
+          <Link href="/" className="flex items-center gap-3 group shrink-0 min-w-0 max-w-[220px] sm:max-w-[280px] xl:max-w-[320px]">
+            <div className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm shadow-xs overflow-hidden shrink-0 group-hover:opacity-90 transition-opacity">
               {branding.logoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={branding.logoUrl} alt="Logo" className="w-full h-full object-contain" />
+                <img src={branding.logoUrl} alt={brandName} className="w-full h-full object-contain" />
               ) : (
-                branding.nameEn?.[0] || "E"
+                branding.nameEn?.[0] || "F"
               )}
             </div>
             <div className="min-w-0">
-              <span className="font-serif-luxury font-bold text-xs sm:text-sm tracking-tight block text-[#16251e] leading-tight group-hover:text-[#1e3328] transition-colors truncate">
-                {branding.nameEn || "ELEVATE • FMS"}
-              </span>
-              <span className="text-[9px] sm:text-[10px] tracking-wider uppercase font-semibold text-[#55635c] block truncate">
-                {branding.nameTh || "Faculty & Campus Sanctuary"}
+              <b className="block text-sm sm:text-base font-bold tracking-tight text-foreground leading-tight truncate">
+                {brandName}
+              </b>
+              <span className="block text-xs text-muted-foreground truncate">
+                {brandTagline}
               </span>
             </div>
           </Link>
@@ -46,20 +57,20 @@ export default async function PortalLayout({ children }: { children: React.React
           <PortalNavClient isLoggedIn={!!session?.user} />
 
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             <LanguageSwitcher />
 
             {session?.user ? (
-              <Button asChild size="sm" className="gap-1.5 sm:gap-2 rounded-full bg-[#1e3328] hover:bg-[#13221b] text-white text-[11px] sm:text-xs font-semibold uppercase tracking-wider px-3 sm:px-4">
+              <Button asChild size="sm" className="gap-2 shrink-0 rounded-md">
                 <Link href="/dashboard">
-                  <LayoutDashboard className="size-3.5 text-[#c5a059]" />
+                  <LayoutDashboard className="size-4" />
                   <span className="hidden sm:inline">Admin Console</span>
                 </Link>
               </Button>
             ) : (
-              <Button asChild size="sm" className="gap-1.5 sm:gap-2 rounded-full bg-[#1e3328] hover:bg-[#13221b] text-white text-[11px] sm:text-xs font-semibold uppercase tracking-wider px-3 sm:px-4">
+              <Button asChild size="sm" className="gap-2 shrink-0 rounded-md">
                 <Link href="/login?callbackUrl=/reservations/calendar">
-                  <LogIn className="size-3.5 text-[#c5a059]" />
+                  <LogIn className="size-4" />
                   <span>{isEn ? "Sign In" : "เข้าสู่ระบบ"}</span>
                 </Link>
               </Button>
