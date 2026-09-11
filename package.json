@@ -1,11 +1,12 @@
 {
-  "name": "vibe-framework",
+  "name": "fms-sukadmin",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "setup": "tsx scripts/setup.ts",
-    "dev": "next dev --webpack -p 3010",
-    "build": "next build --webpack",
+    "dev": "next dev --webpack",
+    "dev:3010": "next dev --webpack -p 3010",
+    "build": "tsx scripts/prebuild.ts && next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "type-check": "tsc --noEmit",

@@ -23,7 +23,23 @@ let cached: Env | null = null;
 /** อ่านครั้งแรกตอนเรียก ไม่ใช่ตอน import — เทสต์ที่ไม่ใช้ env จึงไม่ล้ม */
 export function env(): Env {
   if (cached) return cached;
-  const parsed = schema.safeParse(process.env);
+  const dbUrl = process.env.DATABASE_URL 
+    || process.env.DB_POSTGRES_URL 
+    || process.env.DB_DATABASE_URL 
+    || process.env.POSTGRES_URL;
+
+  const appUrl = process.env.APP_URL 
+    || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined)
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined)
+    || "http://localhost:3010";
+
+  const rawEnv = {
+    ...process.env,
+    DATABASE_URL: dbUrl,
+    APP_URL: appUrl,
+  };
+
+  const parsed = schema.safeParse(rawEnv);
   if (!parsed.success) {
     const missing = parsed.error.issues.map((i) => i.path.join(".")).join(", ");
     throw new Error(`ตั้งค่า env ไม่ครบ/ไม่ถูกต้อง: ${missing} (ดู .env.example)`);

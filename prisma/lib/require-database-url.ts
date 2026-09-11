@@ -12,11 +12,13 @@
  * เป็นบรรทัดแรกเองอย่างชัดเจน (เหมือน `tests/integration/setup.ts`) แล้วผ่านด่านนี้อีกชั้น
  */
 export function requireDatabaseUrl(): string {
-  const url = process.env.DATABASE_URL;
+  const url = process.env.DATABASE_URL 
+    || process.env.DB_POSTGRES_URL 
+    || process.env.DB_DATABASE_URL 
+    || process.env.POSTGRES_URL;
   if (!url) {
     throw new Error(
-      "ไม่พบ DATABASE_URL — สคริปต์นี้อ่านจากไฟล์ .env ที่รากโปรเจกต์ (คัดลอกจาก .env.example แล้วแก้ค่า: cp .env.example .env)\n" +
-        "ห้ามปล่อยให้ว่าง: node-postgres จะไหลไปใช้ค่าเริ่มต้นของ libpq แล้วเขียนลงฐานข้อมูลอื่นเงียบ ๆ",
+      "ไม่พบ DATABASE_URL หรือ DB_POSTGRES_URL — สคริปต์นี้อ่านจากไฟล์ .env ที่รากโปรเจกต์ หรือ environment variable ของ Vercel",
     );
   }
   return url;
