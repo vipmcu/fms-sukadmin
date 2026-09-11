@@ -73,14 +73,14 @@ export function SummitHero({ programsCount = 12 }: SummitHeroProps) {
           muted={isMuted}
           playsInline
           onLoadedData={() => setVideoLoaded(true)}
-          poster="https://strvid.nyc3.cdn.digitaloceanspaces.com/motionitems/1784999647383-summit-hero.webp"
+          poster="/videos/hero-poster.webp"
           className={cn(
             "absolute inset-0 w-full h-full object-cover object-center scale-105 transition-all duration-1000",
             videoLoaded ? "opacity-100" : "opacity-90"
           )}
         >
           <source
-            src="https://strvid.nyc3.cdn.digitaloceanspaces.com/motionsite/summit-hero-1.mp4"
+            src="/videos/hero-drone-10s.mp4"
             type="video/mp4"
           />
         </video>
@@ -295,8 +295,9 @@ export function SummitHero({ programsCount = 12 }: SummitHeroProps) {
               autoPlay
               controls
               playsInline
+              poster="/videos/hero-poster.webp"
               className="w-full h-full object-cover"
-              src="https://strvid.nyc3.cdn.digitaloceanspaces.com/motionsite/summit-hero-1.mp4"
+              src="/videos/hero-drone-10s.mp4"
             />
           </div>
         </div>
