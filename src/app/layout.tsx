@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Google_Sans, Sarabun, Playfair_Display } from "next/font/google";
+import { Inter, Sarabun, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -11,7 +11,7 @@ import { getLocaleCookie } from "@/shared/lib/i18n/server";
 import { DEFAULT_LOCALE } from "@/shared/lib/i18n/config";
 import { auth, resolvePalette } from "@/features/identity/server";
 
-const googleSans = Google_Sans({ variable: "--font-google-sans", subsets: ["latin", "latin-ext"], display: "swap" });
+const inter = Inter({ variable: "--font-inter", subsets: ["latin"], weight: ["300", "400", "500", "600", "700", "800"], display: "swap" });
 const sarabun = Sarabun({ variable: "--font-sarabun", subsets: ["thai", "latin"], weight: ["300", "400", "500", "600", "700", "800"], display: "swap" });
 const playfair = Playfair_Display({ variable: "--font-playfair", subsets: ["latin"], display: "swap" });
 
@@ -25,7 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const locale = cookieLocale ?? session?.locale ?? DEFAULT_LOCALE; // spec B7: login จากเครื่องใหม่ได้ภาษาที่ผู้ใช้เคยเลือก
   return (
     <html lang={locale} data-palette={palette} suppressHydrationWarning>
-      <body className={`${googleSans.variable} ${sarabun.variable} ${playfair.variable} font-sans antialiased`} suppressHydrationWarning>
+      <body className={`${inter.variable} ${sarabun.variable} ${playfair.variable} font-sans antialiased`} suppressHydrationWarning>
         <div className="bg" aria-hidden="true" />
         <I18nProvider locale={locale} messages={UI_MESSAGES}>
           <SessionProvider>

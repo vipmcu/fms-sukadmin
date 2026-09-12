@@ -20,8 +20,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sarabun), var(--font-google-sans), sans-serif;
-  --font-thai: var(--font-sarabun), var(--font-google-sans), sans-serif;
+  --font-sans: var(--font-sarabun), var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-thai: var(--font-sarabun), var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --color-brand: var(--brand);
   --color-brand-light: var(--brand-light);
   --color-brand-deep: var(--brand-deep);
@@ -67,10 +67,100 @@
 
 @layer base {
   :root {
-    --font-inter: var(--font-google-sans);
+    --font-google-sans: var(--font-inter);
   }
   * { @apply border-border outline-ring/50; }
-  body { @apply bg-background text-foreground; }
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body { 
+    @apply bg-background text-foreground;
+    font-family: var(--font-sarabun), var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.68;
+    letter-spacing: 0.005em;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    text-wrap: pretty;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Thai & Bilingual Typography & Spatial Rhythm System
+   จัดระเบียบฟอนต์ให้อ่านง่าย สบายตา ช่องไฟสมดุล สระและวรรณยุกต์ไม่ชนกัน
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* หัวข้อและพาดหัว: สัดส่วนชัดเจน ตัวหนังสือไม่เบียด สระไม่ชนกัน */
+h1, h2, h3, h4, h5, h6,
+.ph h1, .sec-head h2, .article h1, .brand-blk b {
+  font-family: var(--font-sarabun), var(--font-inter), system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  line-height: 1.38;
+  letter-spacing: normal;
+  text-wrap: balance;
+  color: var(--text, currentColor);
+}
+
+h1 {
+  font-size: clamp(1.65rem, 2.5vw, 2.25rem);
+  line-height: 1.32;
+  margin-bottom: 0.65rem;
+}
+
+h2 {
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+  line-height: 1.35;
+  margin-bottom: 0.5rem;
+}
+
+h3 {
+  font-size: clamp(1.1rem, 1.5vw, 1.35rem);
+  line-height: 1.4;
+  margin-bottom: 0.4rem;
+}
+
+/* ย่อหน้าและข้อความเนื้อหา: ระยะบรรทัด 1.72 อ่านง่าย สบายตา */
+p, .prose p, .article p {
+  line-height: 1.72;
+  letter-spacing: 0.005em;
+}
+
+/* ตัวเลข ข้อมูลตาราง และมาตรวัด (Tabular Figures): หลักตัวเลขตรงกันสวยงาม */
+.num, .val, .dt .num, .tabular-nums, table td, .kpi .val, .price {
+  font-family: var(--font-inter), var(--font-sarabun), monospace, sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+/* ข้อความขนาดเล็กและป้ายสถานะ: ช่องไฟโปร่งขึ้นเล็กน้อย ไม่ให้ตัวอักษรจม */
+small, .text-xs, .text-sm, .pill, .badge, .status-pill {
+  line-height: 1.55;
+  letter-spacing: 0.012em;
+}
+
+.kicker, .eyebrow {
+  letter-spacing: 0.15em;
+  line-height: 1.4;
+}
+
+/* ช่องไฟสำหรับปุ่มและฟอร์ม: วางสระบน-ล่างของภาษาไทยกึ่งกลางพื้นที่อย่างสมดุล */
+button, input, select, textarea, .btn, .btn-primary, .btn-secondary {
+  font-family: inherit;
+  line-height: 1.45;
+}
+
+input, select, textarea {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* การจัดระเบียบตารางข้อมูลและการ์ด */
+.dt th, .dt td {
+  line-height: 1.55;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
 }
 
 /* ═══════════ Lingua Bridge (Language School & EdTech System Tokens) ═══════════ */
