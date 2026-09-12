@@ -129,7 +129,12 @@ export function ApplicationFormClient({
           toast.success("ยื่นใบสมัครออนไลน์สำเร็จ!");
           setSubmittedApp(res.data);
         } else {
-          toast.error(res.error.message);
+          const fields = res.error.fieldErrors
+            ? Object.entries(res.error.fieldErrors)
+                .map(([k, v]) => `${k}: ${v.join(", ")}`)
+                .join("; ")
+            : "";
+          toast.error(fields || res.error.message);
         }
       } catch (err: unknown) {
         toast.error(err instanceof Error ? err.message : "Error submitting application");

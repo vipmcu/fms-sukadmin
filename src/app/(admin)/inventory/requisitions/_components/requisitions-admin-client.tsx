@@ -24,7 +24,8 @@ import {
   dispatchSupplyRequisitionAction,
 } from "@/features/assets/actions";
 import type { SupplyItemDto, SupplyRequisitionDto } from "@/features/assets";
-import type { RequisitionStatus } from "@/generated/prisma";
+
+type RequisitionStatus = SupplyRequisitionDto["status"];
 
 interface Props {
   initialRequisitions: SupplyRequisitionDto[];

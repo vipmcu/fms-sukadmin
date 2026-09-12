@@ -5,4 +5,5 @@ export {
   approveDocumentStepAction,
   rejectDocumentStepAction,
   cancelDocumentRequestAction,
+  getDocumentRequestByIdAction,
 } from "./_internal/actions";

@@ -11,6 +11,11 @@ export const admissionStatusEnum = z.enum([
   "CANCELLED",
 ]);
 
+/** UUID จาก Postgres/seed — Zod 4 `.uuid()` บังคับ RFC version nibble จึงใช้รูปแบบหลวม */
+const dbUuid = z
+  .string()
+  .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, "Invalid UUID");
+
 export function validateThaiNationalId(id: string): boolean {
   if (id.length !== 13 || !/^[0-9]{13}$/.test(id)) return false;
   let sum = 0;
@@ -30,7 +35,7 @@ export const createAdmissionRoundSchema = z.object({
   isActive: z.boolean().default(true),
   quotas: z.array(
     z.object({
-      programId: z.string().uuid(),
+      programId: dbUuid,
       quotaSeats: z.number().int().positive(),
       tuitionFee: z.number().nonnegative().optional().nullable(),
       criteriaTh: z.string().optional().nullable(),
@@ -39,8 +44,8 @@ export const createAdmissionRoundSchema = z.object({
 });
 
 export const submitStudentApplicationSchema = z.object({
-  roundId: z.string().uuid(),
-  programId: z.string().uuid(),
+  roundId: dbUuid,
+  programId: dbUuid,
   nationalId: z.string().min(8).max(20).refine(
     (val) => {
       // If 13 digits, validate Thai ID, else accept as Passport (min 8 chars)
@@ -67,7 +72,7 @@ export const submitStudentApplicationSchema = z.object({
 });
 
 export const reviewApplicationSchema = z.object({
-  id: z.string().uuid(),
+  id: dbUuid,
   status: admissionStatusEnum,
   score: z.number().min(0).max(100).optional().nullable(),
   reviewerComment: z.string().optional().nullable(),

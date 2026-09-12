@@ -767,7 +767,7 @@ model SupplyRequisitionItem {
   quantity      Int
 
   requisition SupplyRequisition @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
-  supplyItem  SupplyItem        @relation(fields: [supplyItemId], references: [id], onDelete: Restrict)
+  supplyItem  SupplyItem        @relation(fields: [supplyItemId], references: [id], onDelete: Cascade)
 
   @@unique([requisitionId, supplyItemId])
   @@map("supply_requisition_items")

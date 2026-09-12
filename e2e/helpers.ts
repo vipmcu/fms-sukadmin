@@ -36,10 +36,16 @@ export async function seedRevokedSession(context: BrowserContext, baseURL: strin
 /** รอคุกกี้ authjs.csrf-token (ตั้งโดย password-login-form.tsx ตอน mount) ก่อนกด submit — ถ้ากดเร็วกว่า
  *  ที่คุกกี้จะมาถึง (เร็วกว่าที่มนุษย์พิมพ์ได้จริง) next-auth จะเจอ MissingCSRF ในการ submit ครั้งแรก
  *  แม้รหัสผ่านจะถูกต้องก็ตาม — ไม่ใช่บั๊กของฟอร์ม แค่ Playwright เร็วกว่าคนจริง */
+/** รอคุกกี้ csrf จาก next-auth — getCsrfToken() บนฟอร์มเรียก /api/auth/csrf ตอน mount */
 async function waitForCsrfCookie(page: Page) {
-  await expect
-    .poll(async () => (await page.context().cookies()).some((c) => c.name === "authjs.csrf-token"), { timeout: 5_000 })
-    .toBe(true);
+  await page.waitForSelector("#email", { timeout: 15_000 });
+  const hasCookie = async () =>
+    (await page.context().cookies()).some((c) => c.name.includes("csrf-token") || c.name.includes("authjs.csrf"));
+  if (await hasCookie()) return;
+  await page.evaluate(async () => {
+    await fetch("/api/auth/csrf", { credentials: "same-origin" });
+  });
+  await expect.poll(hasCookie, { timeout: 15_000 }).toBe(true);
 }
 
 /**

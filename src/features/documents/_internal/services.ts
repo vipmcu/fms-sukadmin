@@ -7,7 +7,7 @@ import {
   ApproveDocumentStepInput,
   RejectDocumentStepInput,
 } from "./validations";
-import { canReviewDocument, calculateApprovalTransition } from "./workflow";
+import { canReviewDocument, canCancelDocument, calculateApprovalTransition, buildApproverRoleChain } from "./workflow";
 
 export interface DocumentTypeDto {
   id: string;
@@ -264,6 +264,15 @@ export async function createDocumentRequest(
   input: CreateDocumentRequestInput
 ): Promise<DocumentRequestDto> {
   const documentNo = await generateDocumentNo(tenantId);
+  const approverRoles = buildApproverRoleChain(
+    input.totalSteps,
+    input.currentApproverRole,
+    input.approverRoles
+  );
+  const metadata = {
+    ...(input.metadata ?? {}),
+    approverRoles,
+  };
 
   const created = await prisma.documentRequest.create({
     data: {
@@ -272,13 +281,13 @@ export async function createDocumentRequest(
       typeId: input.typeId,
       title: input.title,
       content: input.content,
-      metadata: (input.metadata as Prisma.InputJsonValue) ?? {},
+      metadata: metadata as Prisma.InputJsonValue,
       attachments: (input.attachments as unknown as Prisma.InputJsonValue) ?? [],
       status: "SUBMITTED",
       requesterId,
       currentStep: 1,
       totalSteps: input.totalSteps,
-      currentApproverRole: input.currentApproverRole,
+      currentApproverRole: approverRoles[0] ?? input.currentApproverRole,
     },
   });
 
@@ -312,9 +321,17 @@ export async function approveDocumentStep(
       throw new Error("เอกสารนี้ไม่ได้อยู่ในสถานะรอพิจารณาลงนาม");
     }
 
+    const meta = (existing.metadata ?? {}) as { approverRoles?: string[] };
+    const roleChain =
+      Array.isArray(meta.approverRoles) && meta.approverRoles.length > 0
+        ? meta.approverRoles
+        : buildApproverRoleChain(existing.totalSteps, existing.currentApproverRole ?? "DEPT_HEAD");
+    const roleForStep = existing.currentApproverRole || approverRole;
+
     const { isFinalStep, nextStatus, nextStep, nextRole } = calculateApprovalTransition(
       existing.currentStep,
-      existing.totalSteps
+      existing.totalSteps,
+      roleChain
     );
 
     // บันทึกขั้นตอนการอนุมัติ
@@ -328,7 +345,7 @@ export async function approveDocumentStep(
       create: {
         documentId: existing.id,
         stepNumber: existing.currentStep,
-        approverRole,
+        approverRole: roleForStep,
         approverId,
         status: "APPROVED",
         comment: input.comment || null,
@@ -336,7 +353,7 @@ export async function approveDocumentStep(
         actionAt: new Date(),
       },
       update: {
-        approverRole,
+        approverRole: roleForStep,
         approverId,
         status: "APPROVED",
         comment: input.comment || null,
@@ -388,6 +405,8 @@ export async function rejectDocumentStep(
       throw new Error("เอกสารนี้ไม่ได้อยู่ในสถานะรอพิจารณาลงนาม");
     }
 
+    const roleForStep = existing.currentApproverRole || approverRole;
+
     await tx.documentApprovalStep.upsert({
       where: {
         documentId_stepNumber: {
@@ -398,14 +417,14 @@ export async function rejectDocumentStep(
       create: {
         documentId: existing.id,
         stepNumber: existing.currentStep,
-        approverRole,
+        approverRole: roleForStep,
         approverId,
         status: "REJECTED",
         comment: input.rejectionReason,
         actionAt: new Date(),
       },
       update: {
-        approverRole,
+        approverRole: roleForStep,
         approverId,
         status: "REJECTED",
         comment: input.rejectionReason,
@@ -450,7 +469,7 @@ export async function cancelDocumentRequest(
     where: { id, tenantId, requesterId },
   });
   if (!existing) throw new Error("ไม่พบรายการคำร้องหรือคุณไม่มีสิทธิ์ยกเลิก");
-  if (existing.status !== "DRAFT" && existing.status !== "SUBMITTED") {
+  if (!canCancelDocument(existing.status)) {
     throw new Error("ไม่สามารถยกเลิกคำร้องที่กำลังพิจารณาหรือเสร็จสิ้นแล้วได้");
   }
 

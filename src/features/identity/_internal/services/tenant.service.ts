@@ -2,6 +2,7 @@ import { cache } from "react";
 import { prisma, type Db } from "@/shared/lib/infra/prisma";
 import { DEFAULT_PALETTE, isPalette, type PaletteId } from "@/shared/lib/palette";
 import { errors } from "@/shared/lib/errors";
+import { getPortalTenantId } from "@/shared/lib/portal-tenant";
 import { writeAudit } from "../audit";
 import type { UpdateSettingsInput } from "../validations/settings";
 
@@ -71,10 +72,10 @@ export interface TenantBranding {
   palette: PaletteId;
 }
 
-/** ใช้โดย admin layout — ดึงข้อมูลแบรนดิ้งของ tenant ปัจจุบัน (ชื่อ, โลโก้, พาเล็ตสี) */
+/** ใช้โดย admin/portal layout — ดึงข้อมูลแบรนดิ้งของ tenant ปัจจุบัน (ชื่อ, โลโก้, พาเล็ตสี) */
 export const resolveTenantBranding = cache(async (): Promise<TenantBranding> => {
   try {
-    const tenantId = (await sessionTenantId()) || (await prisma.tenant.findFirst({ orderBy: { createdAt: "asc" }, select: { id: true } }))?.id;
+    const tenantId = (await sessionTenantId()) || (await getPortalTenantId());
     if (!tenantId) {
       return { nameTh: "VibeCore", nameEn: "VibeCore", logoUrl: null, palette: DEFAULT_PALETTE };
     }

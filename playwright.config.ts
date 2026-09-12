@@ -12,8 +12,23 @@ export default defineConfig({
   use: { baseURL: BASE_URL, trace: "on-first-retry", screenshot: "only-on-failure" },
   projects: [
     { name: "setup", testMatch: /.*\.setup\.ts/ },
-    { name: "admin", testIgnore: /(login|guest|portal-public)\.spec\.ts/, use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/admin.json" }, dependencies: ["setup"] },
-    { name: "guest", testMatch: /(login|guest|portal-public)\.spec\.ts/, use: { ...devices["Desktop Chrome"] } },
+    {
+      name: "admin",
+      testIgnore: /(login|guest|portal-public|portal-admissions)\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/admin.json" },
+      dependencies: ["setup"],
+    },
+    {
+      name: "guest",
+      testMatch: /(login|guest|portal-public|portal-admissions)\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+    },
   ],
-  webServer: { command: "npm run dev", url: BASE_URL, reuseExistingServer: true, timeout: 120_000 },
+  // ต้องตรงพอร์ตกับ E2E_BASE_URL (ค่าเริ่มต้น 3010) — อย่า reuse Docker production image บน 3010
+  webServer: {
+    command: "npm run dev:3010",
+    url: BASE_URL,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+  },
 });

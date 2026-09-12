@@ -11,7 +11,7 @@
 | **Phase 1: Database** | types + requests + steps | [x] | |
 | **Phase 2: Domain Logic** | Zod + workflow tests | [x] | |
 | **Phase 3: Integration** | permissions / i18n / actions / audit | [x] | |
-| **Phase 4: Admin UI** | `/documents` รวมแท็บ | [x] | timeline ขั้นอนุมัติยังไม่ครบ |
+| **Phase 4: Admin UI** | `/documents` รวมแท็บ | [x] | โหลด `approvalSteps` ตอนเปิดรายละเอียดแล้ว |
 | **Phase 5: Public Portal** | ไม่มีหน้าบ้าน | [ ] | ตั้งใจเป็น admin-only ในรอบนี้ |
 | **Phase 6: Quality Gate** | unit workflow + validations | [x] | ไม่มี int/e2e |
 
@@ -33,8 +33,8 @@
 
 | ข้อ | สถานะ |
 | :--- | :--- |
-| `nextRole` hardcode `"DEAN"` | เปิดค้าง |
-| `canCancelDocument` ไม่รวม DRAFT แต่ service รวม | เปิดค้าง |
-| รายละเอียดไม่โหลด `approvalSteps` | เปิดค้าง |
+| `nextRole` จาก `approverRoles` ใน metadata (ไม่ hardcode ใน workflow) | ปิดแล้ว |
+| `canCancelDocument` รวม DRAFT สอดคล้อง service/UI | ปิดแล้ว |
+| รายละเอียดโหลด `approvalSteps` ผ่าน `getDocumentRequestByIdAction` | ปิดแล้ว |
 | attachments / signature / requiredFields UI | เปิดค้าง |
 | Portal สำหรับผู้ยื่น | เปิดค้าง |

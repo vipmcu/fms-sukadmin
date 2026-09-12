@@ -889,6 +889,21 @@ async function main() {
   });
 
   console.log(`[seed] เสร็จสมบูรณ์ทุกโมดูล — login: admin@app.local / ${DEV_PASSWORD}`);
+
+  // ปิด tenant จาก integration test เพื่อไม่ให้ portal/branding เลือกผิดเมื่อ DEMO ไม่ถูก prefer
+  const deactivated = await prisma.tenant.updateMany({
+    where: {
+      OR: [
+        { code: { startsWith: "REQ_" } },
+        { code: { startsWith: "RES_" } },
+        { code: { in: ["T", "T2", "T3", "T4"] } },
+      ],
+    },
+    data: { isActive: false },
+  });
+  if (deactivated.count > 0) {
+    console.log(`[seed] ปิด tenant ทดสอบ ${deactivated.count} รายการ`);
+  }
 }
 
 main().finally(() => prisma.$disconnect());

@@ -1,9 +1,12 @@
 import { prisma } from "@/shared/lib/infra/prisma";
 
 export async function getPortalTenantId(): Promise<string> {
-  // First prefer DEMO tenant if present, otherwise first active tenant
-  const tenant =
-    (await prisma.tenant.findFirst({ where: { code: "DEMO", isActive: true } })) ||
-    (await prisma.tenant.findFirst({ where: { isActive: true }, orderBy: { createdAt: "desc" } }));
+  const demo = await prisma.tenant.findFirst({ where: { code: "DEMO", isActive: true } });
+  if (demo) return demo.id;
+  // อย่าเลือก tenant จาก integration test (สร้างทีหลังสุด) — ใช้ tenant เก่าสุดที่ยัง active
+  const tenant = await prisma.tenant.findFirst({
+    where: { isActive: true },
+    orderBy: { createdAt: "asc" },
+  });
   return tenant?.id || "";
 }

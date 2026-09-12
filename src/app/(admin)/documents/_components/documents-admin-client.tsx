@@ -34,6 +34,7 @@ import {
   rejectDocumentStepAction,
   cancelDocumentRequestAction,
   createDocumentTypeAction,
+  getDocumentRequestByIdAction,
 } from "@/features/documents/actions";
 
 interface DocumentsAdminClientProps {
@@ -106,6 +107,10 @@ export function DocumentsAdminClient({
   const openViewDialog = (req: DocumentRequestDto) => {
     setViewTarget(req);
     setViewDialogOpen(true);
+    startTransition(async () => {
+      const res = await getDocumentRequestByIdAction(req.id);
+      if (res.ok) setViewTarget(res.data);
+    });
   };
 
   const handleCreateSubmit = (e: React.FormEvent) => {
@@ -119,6 +124,9 @@ export function DocumentsAdminClient({
         attachments: [],
         totalSteps: Number(totalSteps),
         currentApproverRole,
+        approverRoles: Array.from({ length: Number(totalSteps) }, (_, i) =>
+          i === 0 ? currentApproverRole : "DEAN"
+        ),
       });
       if (res.ok) {
         toast.success(t("documents.msg.created"));
@@ -451,7 +459,7 @@ export function DocumentsAdminClient({
                     </Button>
                   )}
 
-                  {isMine && r.status === "SUBMITTED" && (
+                  {isMine && (r.status === "DRAFT" || r.status === "SUBMITTED") && (
                     <Button
                       variant="ghost"
                       size="sm"

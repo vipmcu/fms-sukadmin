@@ -23,6 +23,8 @@ export const createDocumentRequestSchema = z.object({
   attachments: z.array(z.record(z.string(), z.unknown())).default([]),
   totalSteps: z.number().int().min(1).default(2),
   currentApproverRole: z.string().max(50).default("DEPT_HEAD"),
+  /** สายบทบาทอนุมัติตามลำดับขั้น — ถ้าไม่ครบจะประกอบจาก currentApproverRole + DEAN */
+  approverRoles: z.array(z.string().min(1).max(50)).optional(),
 });
 
 export const approveDocumentStepSchema = z.object({

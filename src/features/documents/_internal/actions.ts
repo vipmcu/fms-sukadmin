@@ -20,6 +20,7 @@ import {
   approveDocumentStep,
   rejectDocumentStep,
   cancelDocumentRequest,
+  getDocumentRequestById,
   type DocumentTypeDto,
   type DocumentRequestDto,
 } from "./services";
@@ -82,6 +83,15 @@ export async function cancelDocumentRequestAction(id: string): Promise<ActionRes
     const ctx = await requirePermission(DOCUMENTS_P.create);
     const result = await cancelDocumentRequest(ctx.tenantId, ctx.userId, id);
     revalidatePath("/documents");
+    return result;
+  });
+}
+
+export async function getDocumentRequestByIdAction(id: string): Promise<ActionResult<DocumentRequestDto>> {
+  return runAction(async () => {
+    const ctx = await requirePermission(DOCUMENTS_P.read);
+    const result = await getDocumentRequestById(ctx.tenantId, id);
+    if (!result) throw new Error("ไม่พบรายการเอกสาร");
     return result;
   });
 }
