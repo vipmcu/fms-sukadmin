@@ -15,6 +15,8 @@ import {
   XCircle,
   ExternalLink,
   BookOpen,
+  Building2,
+  FolderTree,
 } from "lucide-react";
 import { useT } from "@/shared/lib/i18n/client";
 import {
@@ -36,6 +38,11 @@ import {
   updateProgramAction,
   deleteProgramAction,
 } from "@/features/curriculum/actions";
+import {
+  createDepartmentAction,
+  updateDepartmentAction,
+  deleteDepartmentAction,
+} from "@/features/personnel/actions";
 
 interface ProgramsAdminClientProps {
   departments: DepartmentDto[];
@@ -56,6 +63,15 @@ export function ProgramsAdminClient({
 
   const [search, setSearch] = useState("");
   const [selectedLevel, setSelectedLevel] = useState<string>("ALL");
+  const [selectedDeptId, setSelectedDeptId] = useState<string>("ALL");
+
+  // Department Management Dialog State
+  const [deptModalOpen, setDeptModalOpen] = useState(false);
+  const [deptEditTarget, setDeptEditTarget] = useState<DepartmentDto | null>(null);
+  const [deptCode, setDeptCode] = useState("");
+  const [deptNameTh, setDeptNameTh] = useState("");
+  const [deptNameEn, setDeptNameEn] = useState("");
+  const [deptOrder, setDeptOrder] = useState(0);
 
   // Program Dialog State
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -208,6 +224,74 @@ export function ProgramsAdminClient({
     });
   };
 
+  const handleStartEditDept = (dept: DepartmentDto) => {
+    setDeptEditTarget(dept);
+    setDeptCode(dept.code);
+    setDeptNameTh(dept.nameTh);
+    setDeptNameEn(dept.nameEn);
+    setDeptOrder(dept.order);
+  };
+
+  const handleCancelEditDept = () => {
+    setDeptEditTarget(null);
+    setDeptCode("");
+    setDeptNameTh("");
+    setDeptNameEn("");
+    setDeptOrder(departments.length + 1);
+  };
+
+  const handleDeptSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    startTransition(async () => {
+      if (deptEditTarget) {
+        const res = await updateDepartmentAction({
+          id: deptEditTarget.id,
+          code: deptCode,
+          nameTh: deptNameTh,
+          nameEn: deptNameEn,
+          order: Number(deptOrder),
+        });
+        if (res.ok) {
+          toast.success("แก้ไขข้อมูลภาควิชา/ส่วนงานเรียบร้อยแล้ว");
+          handleCancelEditDept();
+          router.refresh();
+        } else {
+          toast.error(res.error?.message || "เกิดข้อผิดพลาดในการแก้ไขภาควิชา");
+        }
+      } else {
+        const res = await createDepartmentAction({
+          code: deptCode,
+          nameTh: deptNameTh,
+          nameEn: deptNameEn,
+          order: Number(deptOrder),
+        });
+        if (res.ok) {
+          toast.success("เพิ่มภาควิชา/ส่วนงานใหม่เรียบร้อยแล้ว");
+          handleCancelEditDept();
+          router.refresh();
+        } else {
+          toast.error(res.error?.message || "เกิดข้อผิดพลาดในการสร้างภาควิชา");
+        }
+      }
+    });
+  };
+
+  const handleDeleteDept = (dept: DepartmentDto) => {
+    if (!confirm(`ยืนยันการลบภาควิชา/ส่วนงาน "${dept.nameTh}"?`)) return;
+    startTransition(async () => {
+      const res = await deleteDepartmentAction(dept.id);
+      if (res.ok) {
+        toast.success("ลบภาควิชา/ส่วนงานเรียบร้อยแล้ว");
+        if (deptEditTarget?.id === dept.id) {
+          handleCancelEditDept();
+        }
+        router.refresh();
+      } else {
+        toast.error(res.error?.message || "ไม่สามารถลบภาควิชา/ส่วนงานได้");
+      }
+    });
+  };
+
   const getLevelBadge = (lvl: string) => {
     switch (lvl) {
       case "BACHELOR":
@@ -223,14 +307,18 @@ export function ProgramsAdminClient({
 
   const filtered = initialPrograms.filter((p) => {
     const matchLevel = selectedLevel === "ALL" || p.level === selectedLevel;
+    const matchDept =
+      selectedDeptId === "ALL" ||
+      (selectedDeptId === "UNASSIGNED" ? !p.departmentId : p.departmentId === selectedDeptId);
     const q = search.toLowerCase();
     const matchSearch =
       !search ||
       p.code.toLowerCase().includes(q) ||
       p.nameTh.toLowerCase().includes(q) ||
       p.nameEn.toLowerCase().includes(q) ||
-      p.degreeTh.toLowerCase().includes(q);
-    return matchLevel && matchSearch;
+      p.degreeTh.toLowerCase().includes(q) ||
+      (p.departmentNameTh && p.departmentNameTh.toLowerCase().includes(q));
+    return matchLevel && matchDept && matchSearch;
   });
 
   return (
@@ -247,29 +335,65 @@ export function ProgramsAdminClient({
           </p>
         </div>
 
-        {canCreate && (
-          <Button
-            size="sm"
-            onClick={openCreateDialog}
-            className="flex items-center gap-1.5"
-          >
-            <Plus className="size-4" />
-            {t("curriculum.btn.create")}
-          </Button>
-        )}
+        <div className="flex items-center gap-2 flex-wrap">
+          {canManage && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                handleCancelEditDept();
+                setDeptModalOpen(true);
+              }}
+              className="flex items-center gap-1.5"
+            >
+              <Building2 className="size-4 text-primary" />
+              จัดการภาควิชา/ส่วนงาน ({departments.length})
+            </Button>
+          )}
+
+          {canCreate && (
+            <Button
+              size="sm"
+              onClick={openCreateDialog}
+              className="flex items-center gap-1.5"
+            >
+              <Plus className="size-4" />
+              {t("curriculum.btn.create")}
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Filters */}
       <div className="flex flex-col md:flex-row gap-3 items-center justify-between bg-card p-4 rounded-xl border border-border shadow-xs">
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="ค้นหารหัส, ชื่อหลักสูตร, ปริญญา..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-1.5 text-sm border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-          />
+        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto items-center flex-1">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="ค้นหารหัส, ชื่อหลักสูตร, ปริญญา..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-1.5 text-sm border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          <div className="flex items-center gap-1.5 w-full sm:w-auto">
+            <select
+              value={selectedDeptId}
+              onChange={(e) => setSelectedDeptId(e.target.value)}
+              aria-label="กรองตามภาควิชา/ส่วนงาน"
+              className="w-full sm:w-auto h-8 px-2.5 text-xs border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="ALL">ทุกภาควิชา/ส่วนงาน ({initialPrograms.length})</option>
+              {departments.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.nameTh} {d.programCount !== undefined ? `(${d.programCount})` : ""}
+                </option>
+              ))}
+              <option value="UNASSIGNED">ยังไม่ระบุภาควิชา</option>
+            </select>
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
@@ -328,13 +452,24 @@ export function ProgramsAdminClient({
               >
                 <div>
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-mono text-xs font-bold px-2 py-0.5 bg-muted rounded">
                         {p.code}
                       </span>
                       <span className={`text-[11px] font-semibold px-2 py-0.5 rounded ${badge.color}`}>
                         {badge.label}
                       </span>
+                      {p.departmentNameTh ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700/80">
+                          <Building2 className="size-3 text-slate-500" />
+                          {p.departmentNameTh}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground/70 bg-muted/40 px-2 py-0.5 rounded border border-dashed border-border">
+                          <Building2 className="size-3 opacity-40" />
+                          ไม่ระบุภาควิชา
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -678,6 +813,186 @@ export function ProgramsAdminClient({
             </Button>
           </LiyonDialogFooter>
         </form>
+      </LiyonDialog>
+
+      {/* Department Management Dialog */}
+      <LiyonDialog
+        open={deptModalOpen}
+        onOpenChange={(open) => {
+          setDeptModalOpen(open);
+          if (!open) handleCancelEditDept();
+        }}
+        wide
+      >
+        <LiyonDialogCloseButton label={t("btn.cancel")} />
+        <LiyonDialogHeader
+          title="บริหารจัดการภาควิชาและส่วนงาน"
+          description="กำหนดภาควิชาหรือหน่วยงานสำหรับจัดหมวดหมู่หลักสูตรและบุคลากร"
+        />
+
+        <LiyonDialogBody>
+          <div className="space-y-6">
+          {/* Form for Create / Edit */}
+          <div className="p-4 rounded-xl border border-border bg-muted/30 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <FolderTree className="size-4 text-primary" />
+                {deptEditTarget ? "แก้ไขข้อมูลภาควิชา/ส่วนงาน" : "เพิ่มภาควิชา/ส่วนงานใหม่"}
+              </h3>
+              {deptEditTarget && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCancelEditDept}
+                  className="text-xs h-7 text-muted-foreground hover:text-foreground"
+                >
+                  ยกเลิกการแก้ไข
+                </Button>
+              )}
+            </div>
+
+            <form onSubmit={handleDeptSubmit} className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <LiyonField label="รหัสภาควิชา/ส่วนงาน">
+                  <input
+                    required
+                    className="w-full px-3 py-1.5 text-xs font-mono border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                    value={deptCode}
+                    onChange={(e) => setDeptCode(e.target.value.toUpperCase())}
+                    placeholder="เช่น D-BUDDHIST, D-PAD"
+                  />
+                </LiyonField>
+
+                <LiyonField label="ลำดับการแสดงผล">
+                  <input
+                    type="number"
+                    required
+                    className="w-full px-3 py-1.5 text-xs border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                    value={deptOrder}
+                    onChange={(e) => setDeptOrder(Number(e.target.value))}
+                  />
+                </LiyonField>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <LiyonField label="ชื่อภาควิชา/ส่วนงาน (ภาษาไทย)">
+                  <input
+                    required
+                    className="w-full px-3 py-1.5 text-xs border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                    value={deptNameTh}
+                    onChange={(e) => setDeptNameTh(e.target.value)}
+                    placeholder="เช่น ภาควิชาพระพุทธศาสนา"
+                  />
+                </LiyonField>
+
+                <LiyonField label="ชื่อภาควิชา/ส่วนงาน (ภาษาอังกฤษ)">
+                  <input
+                    required
+                    className="w-full px-3 py-1.5 text-xs border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                    value={deptNameEn}
+                    onChange={(e) => setDeptNameEn(e.target.value)}
+                    placeholder="เช่น Department of Buddhism"
+                  />
+                </LiyonField>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-1">
+                <Button type="submit" size="sm" disabled={pending} className="text-xs h-8">
+                  {pending ? "กำลังบันทึก..." : deptEditTarget ? "บันทึกการแก้ไข" : "เพิ่มภาควิชา"}
+                </Button>
+              </div>
+            </form>
+          </div>
+
+          {/* Department List */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>รายการภาควิชาทั้งหมด ({departments.length})</span>
+              <span>คลิกเพื่อแก้ไขหรือลบ</span>
+            </div>
+
+            {departments.length === 0 ? (
+              <div className="p-8 text-center rounded-xl border border-dashed border-border bg-background">
+                <Building2 className="size-8 mx-auto text-muted-foreground/40 mb-2" />
+                <p className="text-xs text-muted-foreground">ยังไม่มีภาควิชาหรือส่วนงานในระบบ</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {departments.map((dept) => (
+                  <div
+                    key={dept.id}
+                    className={`flex items-center justify-between p-3.5 rounded-xl border transition-colors ${
+                      deptEditTarget?.id === dept.id
+                        ? "border-primary bg-primary/5"
+                        : "border-border bg-card hover:border-border/80"
+                    }`}
+                  >
+                    <div className="space-y-1 min-w-0 pr-3">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 bg-muted rounded text-muted-foreground">
+                          {dept.code}
+                        </span>
+                        <span className="text-xs font-semibold text-foreground truncate">
+                          {dept.nameTh}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground truncate hidden sm:inline">
+                          ({dept.nameEn})
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 font-medium text-[10px]">
+                          <GraduationCap className="size-3" />
+                          {dept.programCount ?? 0} หลักสูตร
+                        </span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-500/10 text-slate-600 dark:text-slate-400 font-medium text-[10px]">
+                          {dept.personnelCount ?? 0} บุคลากร
+                        </span>
+                        <span>ลำดับที่ {dept.order}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleStartEditDept(dept)}
+                        className="size-8 p-0 text-muted-foreground hover:text-foreground"
+                        title="แก้ไขภาควิชา"
+                      >
+                        <Edit2 className="size-3.5" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteDept(dept)}
+                        className="size-8 p-0 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                        title="ลบภาควิชา"
+                        disabled={pending}
+                      >
+                        <Trash2 className="size-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </LiyonDialogBody>
+
+        <LiyonDialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setDeptModalOpen(false)}
+          >
+            ปิดหน้าต่าง
+          </Button>
+        </LiyonDialogFooter>
       </LiyonDialog>
     </div>
   );

@@ -12,16 +12,20 @@ import {
   ArrowRight,
   ArrowUpRight,
   Sparkles,
+  Building2,
 } from "lucide-react";
 import type { AcademicProgramDto } from "@/features/curriculum";
+import type { DepartmentDto } from "@/features/personnel";
 
 interface PublicProgramsClientProps {
   programs: AcademicProgramDto[];
+  departments?: DepartmentDto[];
 }
 
-export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
+export function PublicProgramsClient({ programs, departments = [] }: PublicProgramsClientProps) {
   const [search, setSearch] = useState("");
   const [selectedLevel, setSelectedLevel] = useState<string>("ALL");
+  const [selectedDeptId, setSelectedDeptId] = useState<string>("ALL");
 
   const getLevelBadge = (lvl: string) => {
     switch (lvl) {
@@ -38,6 +42,7 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
 
   const filtered = programs.filter((p) => {
     const matchLevel = selectedLevel === "ALL" || p.level === selectedLevel;
+    const matchDept = selectedDeptId === "ALL" || p.departmentId === selectedDeptId;
     const q = search.toLowerCase();
     const matchSearch =
       !search ||
@@ -45,8 +50,9 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
       p.nameTh.toLowerCase().includes(q) ||
       p.nameEn.toLowerCase().includes(q) ||
       p.degreeTh.toLowerCase().includes(q) ||
+      (p.departmentNameTh && p.departmentNameTh.toLowerCase().includes(q)) ||
       p.careerOpportunities.some((c) => c.toLowerCase().includes(q));
-    return matchLevel && matchSearch;
+    return matchLevel && matchDept && matchSearch;
   });
 
   return (
@@ -67,20 +73,40 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
       </div>
 
       {/* 2. Filters & Search */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between lingua-card p-4 rounded-3xl border border-border/80 bg-card shadow-xs">
-        <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="ค้นหาชื่อหลักสูตร, สาขาวิชา, ปริญญา..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            aria-label="ค้นหาชื่อหลักสูตร, สาขาวิชา, ปริญญา"
-            className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm border border-border/80 rounded-2xl bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
-          />
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between lingua-card p-4 rounded-3xl border border-border/80 bg-card shadow-xs">
+        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto items-center flex-1">
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="ค้นหาชื่อหลักสูตร, สาขาวิชา, ปริญญา..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              aria-label="ค้นหาชื่อหลักสูตร, สาขาวิชา, ปริญญา"
+              className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm border border-border/80 rounded-2xl bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+            />
+          </div>
+
+          {departments && departments.length > 0 && (
+            <div className="w-full sm:w-auto">
+              <select
+                value={selectedDeptId}
+                onChange={(e) => setSelectedDeptId(e.target.value)}
+                aria-label="เลือกภาควิชา/ส่วนงาน"
+                className="w-full sm:w-auto px-3 py-2 text-xs sm:text-sm border border-border/80 rounded-2xl bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+              >
+                <option value="ALL">ทุกภาควิชา/ส่วนงาน</option>
+                {departments.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.nameTh} {d.programCount ? `(${d.programCount})` : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
-        <div role="group" aria-label="กรองระดับการศึกษา (Filter by Education Level)" className="flex items-center gap-1.5 p-1 bg-muted/60 rounded-xl w-full sm:w-auto overflow-x-auto">
+        <div role="group" aria-label="กรองระดับการศึกษา (Filter by Education Level)" className="flex items-center gap-1.5 p-1 bg-muted/60 rounded-xl w-full md:w-auto overflow-x-auto">
           <button
             type="button"
             onClick={() => setSelectedLevel("ALL")}
@@ -153,13 +179,19 @@ export function PublicProgramsClient({ programs }: PublicProgramsClientProps) {
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-mono text-[10px] font-bold px-2 py-0.5 bg-muted rounded text-muted-foreground">
                         {p.code}
                       </span>
                       <span className={`text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full uppercase ${badge.color}`}>
                         {badge.label}
                       </span>
+                      {p.departmentNameTh && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-medium tracking-wide px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                          <Building2 className="size-2.5 text-slate-500" />
+                          {p.departmentNameTh}
+                        </span>
+                      )}
                     </div>
 
                     {p.isAcceptingApplications ? (

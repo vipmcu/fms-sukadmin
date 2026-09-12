@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { createPersonnelSchema, createDepartmentSchema } from "./validations";
+import {
+  createPersonnelSchema,
+  createDepartmentSchema,
+  updateDepartmentSchema,
+} from "./validations";
 
 describe("Personnel Validations", () => {
   it("validates valid personnel input", () => {
@@ -41,5 +45,29 @@ describe("Personnel Validations", () => {
     };
     const parsed = createDepartmentSchema.parse(input);
     expect(parsed.code).toBe("DEPT-CS");
+  });
+
+  it("validates updateDepartmentSchema with valid uuid", () => {
+    const input = {
+      id: "11111111-1111-4111-8111-111111111111",
+      code: "DEPT-BUDDHIST",
+      nameTh: "ภาควิชาพระพุทธศาสนา",
+      nameEn: "Department of Buddhism",
+      order: 2,
+    };
+    const parsed = updateDepartmentSchema.parse(input);
+    expect(parsed.id).toBe("11111111-1111-4111-8111-111111111111");
+    expect(parsed.nameTh).toBe("ภาควิชาพระพุทธศาสนา");
+  });
+
+  it("rejects updateDepartmentSchema with invalid uuid", () => {
+    const input = {
+      id: "invalid-uuid",
+      code: "DEPT-BUDDHIST",
+      nameTh: "ภาควิชาพระพุทธศาสนา",
+      nameEn: "Department of Buddhism",
+      order: 2,
+    };
+    expect(() => updateDepartmentSchema.parse(input)).toThrow();
   });
 });

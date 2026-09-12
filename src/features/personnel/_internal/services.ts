@@ -1,4 +1,5 @@
 import { prisma } from "@/shared/lib/infra/prisma";
+import { errors } from "@/shared/lib/errors";
 import type { PersonnelType, AcademicPosition, Prisma } from "@/generated/prisma";
 import type {
   CreateDepartmentInput,
@@ -15,6 +16,7 @@ export interface DepartmentDto {
   nameEn: string;
   order: number;
   personnelCount?: number;
+  programCount?: number;
 }
 
 export interface PersonnelProfileDto {
@@ -51,7 +53,7 @@ export async function listDepartments(tenantId: string): Promise<DepartmentDto[]
   if (!tenantId) return [];
   const items = await prisma.department.findMany({
     where: { tenantId },
-    include: { _count: { select: { personnel: true } } },
+    include: { _count: { select: { personnel: true, programs: true } } },
     orderBy: { order: "asc" },
   });
 
@@ -63,6 +65,7 @@ export async function listDepartments(tenantId: string): Promise<DepartmentDto[]
     nameEn: d.nameEn,
     order: d.order,
     personnelCount: d._count.personnel,
+    programCount: d._count.programs,
   }));
 }
 
@@ -110,6 +113,43 @@ export async function updateDepartment(
     nameEn: updated.nameEn,
     order: updated.order,
   };
+}
+
+export async function deleteDepartment(
+  tenantId: string,
+  id: string
+): Promise<void> {
+  const dept = await prisma.department.findFirst({
+    where: { id, tenantId },
+    include: {
+      _count: {
+        select: {
+          programs: true,
+          personnel: true,
+          assetItems: true,
+        },
+      },
+    },
+  });
+
+  if (!dept) {
+    throw errors.not_found("department_not_found");
+  }
+
+  const { programs, personnel, assetItems } = dept._count;
+  if (programs > 0 || personnel > 0 || assetItems > 0) {
+    const reasons: string[] = [];
+    if (programs > 0) reasons.push(`${programs} หลักสูตร`);
+    if (personnel > 0) reasons.push(`${personnel} บุคลากร`);
+    if (assetItems > 0) reasons.push(`${assetItems} รายการสินทรัพย์`);
+    throw errors.conflict(
+      `ไม่สามารถลบภาควิชา/ส่วนงานนี้ได้ เนื่องจากยังมีข้อมูลที่สังกัดอยู่ (${reasons.join(", ")}) กรุณาย้ายหรือลบข้อมูลที่เกี่ยวข้องก่อน`
+    );
+  }
+
+  await prisma.department.delete({
+    where: { id },
+  });
 }
 
 export async function listPersonnel(

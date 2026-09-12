@@ -1,5 +1,6 @@
 import { getPortalTenantId } from "@/shared/lib/portal-tenant";
 import { listPrograms } from "@/features/curriculum/server";
+import { listDepartments } from "@/features/personnel/server";
 import { PublicProgramsClient } from "./_components/public-programs-client";
 
 export const metadata = {
@@ -10,7 +11,10 @@ export const metadata = {
 export default async function PublicProgramsPage() {
   const tenantId = await getPortalTenantId();
 
-  const programs = await listPrograms(tenantId, { isActive: true });
+  const [programs, departments] = await Promise.all([
+    listPrograms(tenantId, { isActive: true }),
+    listDepartments(tenantId),
+  ]);
 
-  return <PublicProgramsClient programs={programs} />;
+  return <PublicProgramsClient programs={programs} departments={departments} />;
 }

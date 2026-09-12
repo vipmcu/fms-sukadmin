@@ -4,6 +4,7 @@ export {
   listDepartments,
   createDepartment,
   updateDepartment,
+  deleteDepartment,
   listPersonnel,
   getPersonnelById,
   createPersonnel,

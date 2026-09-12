@@ -1,6 +1,7 @@
 export {
   createDepartmentAction,
   updateDepartmentAction,
+  deleteDepartmentAction,
   createPersonnelAction,
   updatePersonnelAction,
   deletePersonnelAction,
