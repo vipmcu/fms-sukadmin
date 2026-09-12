@@ -94,6 +94,10 @@ _Avoid_: Equipment (informal), inventory (the module includes supplies too)
 A consumable stock line. Distinct from an Asset Item.
 _Avoid_: Material, stock (ambiguous)
 
+**Supply Requisition**:
+A staff request to withdraw Supply Items. Moves PENDING → APPROVED → DISPATCHED (or REJECTED / CANCELLED). Stock is deducted only on dispatch.
+_Avoid_: Purchase order, material request (informal)
+
 ## Maintenance
 
 **Service Ticket**:

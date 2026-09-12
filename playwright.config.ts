@@ -12,8 +12,8 @@ export default defineConfig({
   use: { baseURL: BASE_URL, trace: "on-first-retry", screenshot: "only-on-failure" },
   projects: [
     { name: "setup", testMatch: /.*\.setup\.ts/ },
-    { name: "admin", testIgnore: /(login|guest)\.spec\.ts/, use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/admin.json" }, dependencies: ["setup"] },
-    { name: "guest", testMatch: /(login|guest)\.spec\.ts/, use: { ...devices["Desktop Chrome"] } },
+    { name: "admin", testIgnore: /(login|guest|portal-public)\.spec\.ts/, use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/admin.json" }, dependencies: ["setup"] },
+    { name: "guest", testMatch: /(login|guest|portal-public)\.spec\.ts/, use: { ...devices["Desktop Chrome"] } },
   ],
   webServer: { command: "npm run dev", url: BASE_URL, reuseExistingServer: true, timeout: 120_000 },
 });

@@ -49,9 +49,28 @@ export const adjustStockSchema = z.object({
   remarks: z.string().optional().nullable(),
 });
 
+export const createSupplyRequisitionSchema = z.object({
+  purpose: z.string().max(1000).optional().nullable(),
+  items: z
+    .array(
+      z.object({
+        supplyItemId: z.string().uuid(),
+        quantity: z.number().int().positive(),
+      })
+    )
+    .min(1),
+});
+
+export const rejectSupplyRequisitionSchema = z.object({
+  id: z.string().uuid(),
+  rejectionReason: z.string().min(1).max(1000),
+});
+
 export type CreateAssetItemInput = z.infer<typeof createAssetItemSchema>;
 export type UpdateAssetItemInput = z.infer<typeof updateAssetItemSchema>;
 export type TransferAssetInput = z.infer<typeof transferAssetSchema>;
 export type CreateSupplyItemInput = z.infer<typeof createSupplyItemSchema>;
 export type UpdateSupplyItemInput = z.infer<typeof updateSupplyItemSchema>;
 export type AdjustStockInput = z.infer<typeof adjustStockSchema>;
+export type CreateSupplyRequisitionInput = z.infer<typeof createSupplyRequisitionSchema>;
+export type RejectSupplyRequisitionInput = z.infer<typeof rejectSupplyRequisitionSchema>;

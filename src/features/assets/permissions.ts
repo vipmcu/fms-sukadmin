@@ -8,6 +8,8 @@ export const ASSETS_P = {
   transfer: "assets:transfer",
   dispose: "assets:dispose",
   suppliesManage: "assets:supplies_manage",
+  requisitionCreate: "assets:requisition_create",
+  requisitionApprove: "assets:requisition_approve",
 } as const;
 
 export const ASSETS_PERMISSIONS: readonly PermissionDef[] = [
@@ -18,4 +20,6 @@ export const ASSETS_PERMISSIONS: readonly PermissionDef[] = [
   { code: ASSETS_P.transfer, module: "assets", action: "transfer", description: "โอนย้ายสถานที่และผู้ถือครองครุภัณฑ์" },
   { code: ASSETS_P.dispose, module: "assets", action: "dispose", description: "อนุมัติแทงจำหน่ายครุภัณฑ์" },
   { code: ASSETS_P.suppliesManage, module: "assets", action: "supplies_manage", description: "บริหารคลังและการรับเข้า/ตัดจ่ายวัสดุ" },
+  { code: ASSETS_P.requisitionCreate, module: "assets", action: "requisition_create", description: "ยื่นคำขอเบิกวัสดุสิ้นเปลือง" },
+  { code: ASSETS_P.requisitionApprove, module: "assets", action: "requisition_approve", description: "อนุมัติหรือปฏิเสธคำขอเบิกวัสดุ" },
 ];

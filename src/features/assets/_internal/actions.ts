@@ -13,6 +13,8 @@ import {
   createSupplyItemSchema,
   updateSupplyItemSchema,
   adjustStockSchema,
+  createSupplyRequisitionSchema,
+  rejectSupplyRequisitionSchema,
 } from "./validations";
 import {
   createAssetItem,
@@ -22,8 +24,14 @@ import {
   createSupplyItem,
   updateSupplyItem,
   adjustSupplyStock,
+  createSupplyRequisition,
+  approveSupplyRequisition,
+  rejectSupplyRequisition,
+  cancelSupplyRequisition,
+  dispatchSupplyRequisition,
   type AssetItemDto,
   type SupplyItemDto,
+  type SupplyRequisitionDto,
 } from "./services";
 
 export async function createAssetItemAction(input: unknown): Promise<ActionResult<AssetItemDto>> {
@@ -89,6 +97,59 @@ export async function adjustSupplyStockAction(input: unknown): Promise<ActionRes
     const ctx = await requirePermission(ASSETS_P.suppliesManage);
     const parsed = adjustStockSchema.parse(input, { error: zodErrorMap(await getLocale()) });
     const result = await adjustSupplyStock(ctx.tenantId, parsed, ctx.userId);
+    revalidatePath("/inventory/supplies");
+    return result;
+  });
+}
+
+export async function createSupplyRequisitionAction(
+  input: unknown
+): Promise<ActionResult<SupplyRequisitionDto>> {
+  return runAction(async () => {
+    const ctx = await requirePermission(ASSETS_P.requisitionCreate);
+    const parsed = createSupplyRequisitionSchema.parse(input, { error: zodErrorMap(await getLocale()) });
+    const result = await createSupplyRequisition(ctx.tenantId, ctx.userId, parsed);
+    revalidatePath("/inventory/requisitions");
+    revalidatePath("/inventory/supplies");
+    return result;
+  });
+}
+
+export async function approveSupplyRequisitionAction(id: string): Promise<ActionResult<SupplyRequisitionDto>> {
+  return runAction(async () => {
+    const ctx = await requirePermission(ASSETS_P.requisitionApprove);
+    const result = await approveSupplyRequisition(ctx.tenantId, ctx.userId, id);
+    revalidatePath("/inventory/requisitions");
+    return result;
+  });
+}
+
+export async function rejectSupplyRequisitionAction(
+  input: unknown
+): Promise<ActionResult<SupplyRequisitionDto>> {
+  return runAction(async () => {
+    const ctx = await requirePermission(ASSETS_P.requisitionApprove);
+    const parsed = rejectSupplyRequisitionSchema.parse(input, { error: zodErrorMap(await getLocale()) });
+    const result = await rejectSupplyRequisition(ctx.tenantId, ctx.userId, parsed.id, parsed.rejectionReason);
+    revalidatePath("/inventory/requisitions");
+    return result;
+  });
+}
+
+export async function cancelSupplyRequisitionAction(id: string): Promise<ActionResult<SupplyRequisitionDto>> {
+  return runAction(async () => {
+    const ctx = await requirePermission(ASSETS_P.requisitionCreate);
+    const result = await cancelSupplyRequisition(ctx.tenantId, ctx.userId, id);
+    revalidatePath("/inventory/requisitions");
+    return result;
+  });
+}
+
+export async function dispatchSupplyRequisitionAction(id: string): Promise<ActionResult<SupplyRequisitionDto>> {
+  return runAction(async () => {
+    const ctx = await requirePermission(ASSETS_P.suppliesManage);
+    const result = await dispatchSupplyRequisition(ctx.tenantId, ctx.userId, id);
+    revalidatePath("/inventory/requisitions");
     revalidatePath("/inventory/supplies");
     return result;
   });

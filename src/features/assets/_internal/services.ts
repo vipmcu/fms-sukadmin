@@ -1,5 +1,5 @@
 import { prisma } from "@/shared/lib/infra/prisma";
-import { Prisma, type AssetStatus } from "@/generated/prisma";
+import { Prisma, type AssetStatus, type RequisitionStatus } from "@/generated/prisma";
 import {
   CreateAssetItemInput,
   UpdateAssetItemInput,
@@ -7,8 +7,15 @@ import {
   CreateSupplyItemInput,
   UpdateSupplyItemInput,
   AdjustStockInput,
+  CreateSupplyRequisitionInput,
 } from "./validations";
 import { isLowStock, calculateNewStock } from "./stock";
+import {
+  canApproveRequisition,
+  canCancelRequisition,
+  canDispatchRequisition,
+  canRejectRequisition,
+} from "./requisition-workflow";
 
 export interface AssetCategoryDto {
   id: string;
@@ -55,6 +62,33 @@ export interface SupplyItemDto {
   minStock: number;
   unitCost: number | null;
   isLowStock: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SupplyRequisitionItemDto {
+  id: string;
+  supplyItemId: string;
+  supplyCode: string;
+  supplyNameTh: string;
+  unit: string;
+  quantity: number;
+}
+
+export interface SupplyRequisitionDto {
+  id: string;
+  tenantId: string;
+  requisitionNo: string;
+  requesterId: string;
+  requesterName: string;
+  status: RequisitionStatus;
+  purpose: string | null;
+  rejectionReason: string | null;
+  approvedById: string | null;
+  approvedAt: string | null;
+  dispatchedById: string | null;
+  dispatchedAt: string | null;
+  items: SupplyRequisitionItemDto[];
   createdAt: string;
   updatedAt: string;
 }
@@ -546,4 +580,299 @@ export async function adjustSupplyStock(
     createdAt: s.createdAt.toISOString(),
     updatedAt: s.updatedAt.toISOString(),
   };
+}
+
+const requisitionInclude = {
+  requester: { select: { id: true, name: true } },
+  items: { include: { supplyItem: true } },
+} as const;
+
+function toRequisitionDto(
+  r: {
+    id: string;
+    tenantId: string;
+    requisitionNo: string;
+    requesterId: string;
+    status: RequisitionStatus;
+    purpose: string | null;
+    rejectionReason: string | null;
+    approvedById: string | null;
+    approvedAt: Date | null;
+    dispatchedById: string | null;
+    dispatchedAt: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+    requester: { id: string; name: string };
+    items: Array<{
+      id: string;
+      supplyItemId: string;
+      quantity: number;
+      supplyItem: { code: string; nameTh: string; unit: string };
+    }>;
+  }
+): SupplyRequisitionDto {
+  return {
+    id: r.id,
+    tenantId: r.tenantId,
+    requisitionNo: r.requisitionNo,
+    requesterId: r.requesterId,
+    requesterName: r.requester.name,
+    status: r.status,
+    purpose: r.purpose,
+    rejectionReason: r.rejectionReason,
+    approvedById: r.approvedById,
+    approvedAt: r.approvedAt?.toISOString() ?? null,
+    dispatchedById: r.dispatchedById,
+    dispatchedAt: r.dispatchedAt?.toISOString() ?? null,
+    items: r.items.map((i) => ({
+      id: i.id,
+      supplyItemId: i.supplyItemId,
+      supplyCode: i.supplyItem.code,
+      supplyNameTh: i.supplyItem.nameTh,
+      unit: i.supplyItem.unit,
+      quantity: i.quantity,
+    })),
+    createdAt: r.createdAt.toISOString(),
+    updatedAt: r.updatedAt.toISOString(),
+  };
+}
+
+async function generateRequisitionNo(tenantId: string): Promise<string> {
+  const d = new Date();
+  const yearMonth = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}`;
+  const prefix = `REQ-${yearMonth}-`;
+  const count = await prisma.supplyRequisition.count({
+    where: { tenantId, requisitionNo: { startsWith: prefix } },
+  });
+  return `${prefix}${String(count + 1).padStart(4, "0")}`;
+}
+
+export async function listSupplyRequisitions(tenantId: string): Promise<SupplyRequisitionDto[]> {
+  if (!tenantId) return [];
+  const rows = await prisma.supplyRequisition.findMany({
+    where: { tenantId },
+    include: requisitionInclude,
+    orderBy: { createdAt: "desc" },
+  });
+  return rows.map(toRequisitionDto);
+}
+
+export async function createSupplyRequisition(
+  tenantId: string,
+  requesterId: string,
+  input: CreateSupplyRequisitionInput
+): Promise<SupplyRequisitionDto> {
+  const supplyIds = [...new Set(input.items.map((i) => i.supplyItemId))];
+  if (supplyIds.length !== input.items.length) {
+    throw new Error("รายการวัสดุในคำขอต้องไม่ซ้ำกัน");
+  }
+
+  const supplies = await prisma.supplyItem.findMany({
+    where: { tenantId, id: { in: supplyIds } },
+  });
+  if (supplies.length !== supplyIds.length) {
+    throw new Error("พบรายการวัสดุที่ไม่ได้อยู่ในคลังของคณะนี้");
+  }
+
+  const requisitionNo = await generateRequisitionNo(tenantId);
+  const created = await prisma.$transaction(async (tx) => {
+    const req = await tx.supplyRequisition.create({
+      data: {
+        tenantId,
+        requisitionNo,
+        requesterId,
+        status: "PENDING",
+        purpose: input.purpose ?? null,
+        items: {
+          create: input.items.map((i) => ({
+            supplyItemId: i.supplyItemId,
+            quantity: i.quantity,
+          })),
+        },
+      },
+      include: requisitionInclude,
+    });
+    await tx.auditLog.create({
+      data: {
+        tenantId,
+        actorId: requesterId,
+        action: "supply_requisition.create",
+        entity: "supply_requisition",
+        entityId: req.id,
+        after: { requisitionNo, itemCount: input.items.length },
+      },
+    });
+    return req;
+  });
+  return toRequisitionDto(created);
+}
+
+export async function approveSupplyRequisition(
+  tenantId: string,
+  approverId: string,
+  id: string
+): Promise<SupplyRequisitionDto> {
+  const updated = await prisma.$transaction(async (tx) => {
+    const existing = await tx.supplyRequisition.findFirst({
+      where: { id, tenantId },
+      include: requisitionInclude,
+    });
+    if (!existing) throw new Error("ไม่พบคำขอเบิกวัสดุ");
+    if (!canApproveRequisition(existing.status)) {
+      throw new Error("คำขอนี้ไม่อยู่ในสถานะที่อนุมัติได้");
+    }
+    const req = await tx.supplyRequisition.update({
+      where: { id },
+      data: {
+        status: "APPROVED",
+        approvedById: approverId,
+        approvedAt: new Date(),
+      },
+      include: requisitionInclude,
+    });
+    await tx.auditLog.create({
+      data: {
+        tenantId,
+        actorId: approverId,
+        action: "supply_requisition.approve",
+        entity: "supply_requisition",
+        entityId: id,
+        before: { status: existing.status },
+        after: { status: "APPROVED" },
+      },
+    });
+    return req;
+  });
+  return toRequisitionDto(updated);
+}
+
+export async function rejectSupplyRequisition(
+  tenantId: string,
+  approverId: string,
+  id: string,
+  rejectionReason: string
+): Promise<SupplyRequisitionDto> {
+  const updated = await prisma.$transaction(async (tx) => {
+    const existing = await tx.supplyRequisition.findFirst({
+      where: { id, tenantId },
+      include: requisitionInclude,
+    });
+    if (!existing) throw new Error("ไม่พบคำขอเบิกวัสดุ");
+    if (!canRejectRequisition(existing.status)) {
+      throw new Error("คำขอนี้ไม่อยู่ในสถานะที่ปฏิเสธได้");
+    }
+    const req = await tx.supplyRequisition.update({
+      where: { id },
+      data: {
+        status: "REJECTED",
+        rejectionReason,
+        approvedById: approverId,
+        approvedAt: new Date(),
+      },
+      include: requisitionInclude,
+    });
+    await tx.auditLog.create({
+      data: {
+        tenantId,
+        actorId: approverId,
+        action: "supply_requisition.reject",
+        entity: "supply_requisition",
+        entityId: id,
+        before: { status: existing.status },
+        after: { status: "REJECTED", rejectionReason },
+      },
+    });
+    return req;
+  });
+  return toRequisitionDto(updated);
+}
+
+export async function cancelSupplyRequisition(
+  tenantId: string,
+  requesterId: string,
+  id: string
+): Promise<SupplyRequisitionDto> {
+  const updated = await prisma.$transaction(async (tx) => {
+    const existing = await tx.supplyRequisition.findFirst({
+      where: { id, tenantId },
+      include: requisitionInclude,
+    });
+    if (!existing) throw new Error("ไม่พบคำขอเบิกวัสดุ");
+    if (existing.requesterId !== requesterId) {
+      throw new Error("ยกเลิกได้เฉพาะผู้ยื่นคำขอเท่านั้น");
+    }
+    if (!canCancelRequisition(existing.status)) {
+      throw new Error("คำขอนี้ไม่อยู่ในสถานะที่ยกเลิกได้");
+    }
+    const req = await tx.supplyRequisition.update({
+      where: { id },
+      data: { status: "CANCELLED" },
+      include: requisitionInclude,
+    });
+    await tx.auditLog.create({
+      data: {
+        tenantId,
+        actorId: requesterId,
+        action: "supply_requisition.cancel",
+        entity: "supply_requisition",
+        entityId: id,
+        before: { status: existing.status },
+        after: { status: "CANCELLED" },
+      },
+    });
+    return req;
+  });
+  return toRequisitionDto(updated);
+}
+
+export async function dispatchSupplyRequisition(
+  tenantId: string,
+  dispatcherId: string,
+  id: string
+): Promise<SupplyRequisitionDto> {
+  const updated = await prisma.$transaction(async (tx) => {
+    const existing = await tx.supplyRequisition.findFirst({
+      where: { id, tenantId },
+      include: requisitionInclude,
+    });
+    if (!existing) throw new Error("ไม่พบคำขอเบิกวัสดุ");
+    if (!canDispatchRequisition(existing.status)) {
+      throw new Error("จ่ายวัสดุได้เฉพาะคำขอที่อนุมัติแล้ว");
+    }
+
+    for (const item of existing.items) {
+      const supply = await tx.supplyItem.findFirst({
+        where: { id: item.supplyItemId, tenantId },
+      });
+      if (!supply) throw new Error(`ไม่พบวัสดุ ${item.supplyItem.code}`);
+      const newStock = calculateNewStock(supply.currentStock, -item.quantity);
+      await tx.supplyItem.update({
+        where: { id: supply.id },
+        data: { currentStock: newStock },
+      });
+    }
+
+    const req = await tx.supplyRequisition.update({
+      where: { id },
+      data: {
+        status: "DISPATCHED",
+        dispatchedById: dispatcherId,
+        dispatchedAt: new Date(),
+      },
+      include: requisitionInclude,
+    });
+    await tx.auditLog.create({
+      data: {
+        tenantId,
+        actorId: dispatcherId,
+        action: "supply_requisition.dispatch",
+        entity: "supply_requisition",
+        entityId: id,
+        before: { status: existing.status },
+        after: { status: "DISPATCHED" },
+      },
+    });
+    return req;
+  });
+  return toRequisitionDto(updated);
 }

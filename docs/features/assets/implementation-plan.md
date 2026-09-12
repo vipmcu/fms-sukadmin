@@ -14,7 +14,7 @@
 - [x] 2.3 พัฒนา CRUD Services ใน `src/features/assets/_internal/services.ts`
   - `listAssetItems`, `getAssetById`, `createAssetItem`, `updateAssetItem`
   - `transferAsset`, `disposeAsset`, `listSupplyItems`
-- [ ] 2.4 `requisitionSupply` — enum `RequisitionStatus` มีใน schema แต่ยังไม่มีโมเดล/UI เบิกวัสดุ
+- [x] 2.4 `requisitionSupply` — โมเดล `SupplyRequisition` / `SupplyRequisitionItem` + UI `/inventory/requisitions` (PENDING → APPROVED → DISPATCHED)
 
 ### Step 3: Server Actions & Central Integrations
 - [x] 3.1 สร้าง Permissions ใน `src/features/assets/permissions.ts` และลงทะเบียนใน `src/permissions.ts`

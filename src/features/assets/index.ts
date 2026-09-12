@@ -4,6 +4,8 @@ export type {
   AssetCategoryDto,
   AssetItemDto,
   SupplyItemDto,
+  SupplyRequisitionDto,
+  SupplyRequisitionItemDto,
 } from "./_internal/services";
 export type {
   CreateAssetItemInput,
@@ -12,4 +14,6 @@ export type {
   CreateSupplyItemInput,
   UpdateSupplyItemInput,
   AdjustStockInput,
+  CreateSupplyRequisitionInput,
+  RejectSupplyRequisitionInput,
 } from "./_internal/validations";

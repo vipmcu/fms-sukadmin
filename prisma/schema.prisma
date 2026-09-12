@@ -49,6 +49,7 @@ model Tenant {
   assetCategories      AssetCategory[]
   assetItems           AssetItem[]
   supplyItems          SupplyItem[]
+  supplyRequisitions   SupplyRequisition[]
   admissionRounds      AdmissionRound[]
   studentApplications  StudentApplication[]
   serviceCategories    ServiceCategory[]
@@ -87,6 +88,9 @@ model User {
   requestedDocuments    DocumentRequest[]      @relation("DocumentRequester")
   actedApprovalSteps    DocumentApprovalStep[] @relation("DocumentApprover")
   assetTransactions     AssetTransaction[]     @relation("AssetActor")
+  supplyRequisitionsRequested SupplyRequisition[] @relation("SupplyRequisitionRequester")
+  supplyRequisitionsApproved  SupplyRequisition[] @relation("SupplyRequisitionApprover")
+  supplyRequisitionsDispatched SupplyRequisition[] @relation("SupplyRequisitionDispatcher")
   reviewedApplications  StudentApplication[]   @relation("ApplicationReviewer")
   assignedTickets       ServiceTicket[]        @relation("AssignedTechnician")
   ticketComments        TicketComment[]        @relation("CommentAuthor")
@@ -723,10 +727,50 @@ model SupplyItem {
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz()
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant           Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  requisitionItems SupplyRequisitionItem[]
 
   @@unique([tenantId, code])
   @@map("supply_items")
+}
+
+model SupplyRequisition {
+  id              String            @id @default(uuid()) @db.Uuid
+  tenantId        String            @map("tenant_id") @db.Uuid
+  requisitionNo   String            @map("requisition_no") @db.VarChar(50)
+  requesterId     String            @map("requester_id") @db.Uuid
+  status          RequisitionStatus @default(PENDING)
+  purpose         String?           @db.Text
+  rejectionReason String?           @map("rejection_reason") @db.Text
+  approvedById    String?           @map("approved_by_id") @db.Uuid
+  approvedAt      DateTime?         @map("approved_at") @db.Timestamptz()
+  dispatchedById  String?           @map("dispatched_by_id") @db.Uuid
+  dispatchedAt    DateTime?         @map("dispatched_at") @db.Timestamptz()
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt       DateTime          @updatedAt @map("updated_at") @db.Timestamptz()
+
+  tenant       Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  requester    User                    @relation("SupplyRequisitionRequester", fields: [requesterId], references: [id], onDelete: Restrict)
+  approvedBy   User?                   @relation("SupplyRequisitionApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  dispatchedBy User?                   @relation("SupplyRequisitionDispatcher", fields: [dispatchedById], references: [id], onDelete: SetNull)
+  items        SupplyRequisitionItem[]
+
+  @@unique([tenantId, requisitionNo])
+  @@index([tenantId, status, requesterId])
+  @@map("supply_requisitions")
+}
+
+model SupplyRequisitionItem {
+  id            String @id @default(uuid()) @db.Uuid
+  requisitionId String @map("requisition_id") @db.Uuid
+  supplyItemId  String @map("supply_item_id") @db.Uuid
+  quantity      Int
+
+  requisition SupplyRequisition @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
+  supplyItem  SupplyItem        @relation(fields: [supplyItemId], references: [id], onDelete: Restrict)
+
+  @@unique([requisitionId, supplyItemId])
+  @@map("supply_requisition_items")
 }
 
 // ==========================================

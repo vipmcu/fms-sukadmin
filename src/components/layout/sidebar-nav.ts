@@ -83,6 +83,7 @@ export const sidebarGroups: NavGroup[] = [
         children: [
           { title: "assets.nav.items", href: "/inventory/assets", permission: ASSETS_P.read },
           { title: "assets.nav.supplies", href: "/inventory/supplies", permission: ASSETS_P.read },
+          { title: "assets.nav.requisitions", href: "/inventory/requisitions", permission: ASSETS_P.read },
         ],
       },
       { title: "maintenance.nav", href: "/maintenance", icon: Wrench, permission: MAINTENANCE_P.read },
