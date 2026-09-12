@@ -46,66 +46,65 @@ export const sidebarGroups: NavGroup[] = [
     ],
   },
   {
-    label: "news.nav",
-    items: [{ title: "news.nav", href: "/news/manage", icon: Newspaper, permission: NEWS_P.read }],
+    label: "nav.group.academic",
+    items: [
+      { title: "curriculum.nav", href: "/programs/manage", icon: GraduationCap, permission: CURRICULUM_P.read },
+      { title: "admissions.nav", href: "/admissions/manage", icon: UserPlus, permission: ADMISSIONS_P.read },
+    ],
   },
   {
-    label: "personnel.nav",
-    items: [{ title: "personnel.nav", href: "/personnel/manage", icon: UserCheck, permission: PERSONNEL_P.read }],
+    label: "nav.group.administration",
+    items: [
+      { title: "personnel.nav", href: "/personnel/manage", icon: UserCheck, permission: PERSONNEL_P.read },
+      { title: "documents.nav", href: "/documents", icon: FileText, permission: DOCUMENTS_P.read },
+      { title: "news.nav", href: "/news/manage", icon: Newspaper, permission: NEWS_P.read },
+    ],
   },
   {
-    label: "curriculum.nav",
-    items: [{ title: "curriculum.nav", href: "/programs/manage", icon: GraduationCap, permission: CURRICULUM_P.read }],
+    label: "nav.group.facilities",
+    items: [
+      {
+        title: "reservations.nav",
+        href: "/reservations/calendar",
+        icon: CalendarDays,
+        permission: RESERVATIONS_P.read,
+        children: [
+          { title: "reservations.tab.calendar", href: "/reservations/calendar", permission: RESERVATIONS_P.read },
+          { title: "reservations.tab.my", href: "/reservations/my", permission: RESERVATIONS_P.create },
+          { title: "reservations.tab.inbox", href: "/reservations/inbox", permission: RESERVATIONS_P.approve },
+          { title: "reservations.tab.resources", href: "/reservations/resources", permission: RESERVATIONS_P.manage },
+        ],
+      },
+      {
+        title: "assets.nav",
+        href: "/inventory/assets",
+        icon: Package,
+        permission: ASSETS_P.read,
+        children: [
+          { title: "assets.nav.items", href: "/inventory/assets", permission: ASSETS_P.read },
+          { title: "assets.nav.supplies", href: "/inventory/supplies", permission: ASSETS_P.read },
+        ],
+      },
+      { title: "maintenance.nav", href: "/maintenance", icon: Wrench, permission: MAINTENANCE_P.read },
+    ],
   },
   {
-    label: "admissions.nav",
-    items: [{ title: "admissions.nav", href: "/admissions/manage", icon: UserPlus, permission: ADMISSIONS_P.read }],
+    label: "nav.group.system",
+    items: [
+      {
+        title: "nav.users",
+        href: "/users",
+        icon: Users,
+        permission: P.usersRead,
+        children: [
+          { title: "nav.users", href: "/users", permission: P.usersRead },
+          { title: "nav.roles", href: "/users/roles", permission: P.rolesManage },
+        ],
+      },
+      { title: "nav.settings", href: "/settings", icon: Settings, permission: P.settingsManage },
+      { title: "sample.nav", href: "/sample", icon: Layers, permission: SAMPLE_P.sampleRead },
+    ],
   },
-  {
-    label: "assets.nav",
-    items: [{
-      title: "assets.nav", href: "/inventory/assets", icon: Package, permission: ASSETS_P.read,
-      children: [
-        { title: "assets.nav.items", href: "/inventory/assets", permission: ASSETS_P.read },
-        { title: "assets.nav.supplies", href: "/inventory/supplies", permission: ASSETS_P.read },
-      ],
-    }],
-  },
-  {
-    label: "maintenance.nav",
-    items: [{ title: "maintenance.nav", href: "/maintenance", icon: Wrench, permission: MAINTENANCE_P.read }],
-  },
-  {
-    label: "documents.nav",
-    items: [{ title: "documents.nav", href: "/documents", icon: FileText, permission: DOCUMENTS_P.read }],
-  },
-  {
-    label: "reservations.nav",
-    items: [{
-      title: "reservations.nav", href: "/reservations/calendar", icon: CalendarDays, permission: RESERVATIONS_P.read,
-      children: [
-        { title: "reservations.tab.calendar", href: "/reservations/calendar", permission: RESERVATIONS_P.read },
-        { title: "reservations.tab.my", href: "/reservations/my", permission: RESERVATIONS_P.create },
-        { title: "reservations.tab.inbox", href: "/reservations/inbox", permission: RESERVATIONS_P.approve },
-        { title: "reservations.tab.resources", href: "/reservations/resources", permission: RESERVATIONS_P.manage },
-      ],
-    }],
-  },
-  {
-    label: "nav.group.sample",
-    items: [{ title: "sample.nav", href: "/sample", icon: Layers, permission: SAMPLE_P.sampleRead }],
-  },
-  {
-    label: "nav.group.users",
-    items: [{
-      title: "nav.users", href: "/users", icon: Users, permission: P.usersRead,
-      children: [
-        { title: "nav.users", href: "/users", permission: P.usersRead },
-        { title: "nav.roles", href: "/users/roles", permission: P.rolesManage },
-      ],
-    }],
-  },
-  { label: "nav.group.settings", items: [{ title: "nav.settings", href: "/settings", icon: Settings, permission: P.settingsManage }] },
 ];
 
 type Ctx = Parameters<typeof hasPermission>[0];
